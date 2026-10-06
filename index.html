@@ -1,0 +1,3373 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ศักยภาพการฟื้นฟูป่าตามธรรมชาติในประเทศไทย · Interactive Science Platform</title>
+  
+  <!-- Google Fonts: Bai Jamjuree, Trirong, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Trirong:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Zero-Dependency / Local QRCode Lib with CDN Fallback -->
+  <script src="qrcode.min.js"></script>
+  <script>if (typeof QRCode === 'undefined') document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>');</script>
+
+  <style>
+    /* ==========================================================================
+       CSS CUSTOM PROPERTIES & DUAL-THEME TOKENS
+       ========================================================================== */
+    :root, [data-theme="paper"] {
+      --bg-body: #ece4cd;
+      --bg-page: #f5efe0;
+      --bg-card: #fdfaf2;
+      --bg-card-alt: #f4ecdc;
+      --bg-glass: rgba(245, 239, 224, 0.92);
+      --bg-header: rgba(236, 228, 205, 0.96);
+      --border-main: rgba(23, 23, 18, 0.16);
+      --border-subtle: rgba(23, 23, 18, 0.08);
+      --border-accent: #b8643b;
+
+      --forest-deepest: #0a1f16;
+      --forest-deep: #11321f;
+      --forest: #1d4a30;
+      --moss: #3d6849;
+      --leaf: #6b8f58;
+      --leaf-light: #8aab74;
+      --sage: #c4cdb0;
+      --terracotta: #b8643b;
+      --rust: #8a3a1d;
+      --gold: #c89b3c;
+      --gold-light: #e5bd65;
+
+      --ink-primary: #171712;
+      --ink-secondary: #3b3a32;
+      --ink-muted: #6f6d5c;
+      --ink-faint: #9c9985;
+
+      --badge-bg: rgba(61, 104, 73, 0.12);
+      --badge-text: #1d4a30;
+      --tag-neg-bg: rgba(184, 100, 59, 0.12);
+      --tag-neg-text: #8a3a1d;
+      
+      --shadow-sm: 0 2px 6px rgba(10, 31, 22, 0.06);
+      --shadow-md: 0 8px 24px rgba(10, 31, 22, 0.09);
+      --shadow-lg: 0 20px 50px rgba(10, 31, 22, 0.15);
+
+      --color-tier-low: #d7191c;
+      --color-tier-med: #fdae61;
+      --color-tier-high: #1a9641;
+      --color-bar-mid: #d9e075;
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #060e0a;
+      --bg-page: #0a1811;
+      --bg-card: #0f241a;
+      --bg-card-alt: #142e22;
+      --bg-glass: rgba(10, 24, 17, 0.92);
+      --bg-header: rgba(6, 14, 10, 0.96);
+      --border-main: rgba(138, 171, 116, 0.22);
+      --border-subtle: rgba(138, 171, 116, 0.12);
+      --border-accent: #e58252;
+
+      --forest-deepest: #f0f7f2;
+      --forest-deep: #e0eedb;
+      --forest: #8aab74;
+      --moss: #6b8f58;
+      --leaf: #a1c48c;
+      --leaf-light: #c4cdb0;
+      --sage: #2d4e3a;
+      --terracotta: #e58252;
+      --rust: #f29a6e;
+      --gold: #f0c567;
+      --gold-light: #fbe29a;
+
+      --ink-primary: #f0f5ed;
+      --ink-secondary: #c2cfbe;
+      --ink-muted: #8ea08c;
+      --ink-faint: #596b58;
+
+      --badge-bg: rgba(138, 171, 116, 0.18);
+      --badge-text: #c4cdb0;
+      --tag-neg-bg: rgba(229, 130, 82, 0.18);
+      --tag-neg-text: #f29a6e;
+
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
+      --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.7);
+
+      --color-tier-low: #f45b5e;
+      --color-tier-med: #e58252;
+      --color-tier-high: #34d36e;
+      --color-bar-mid: #ffffa0;
+    }
+
+    /* Base Reset */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background-color: var(--bg-body);
+      color: var(--ink-primary);
+      font-family: 'Bai Jamjuree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .display { font-family: 'Trirong', Georgia, serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Layout Wrapper */
+    .app-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      position: relative;
+    }
+
+    /* Subtle Paper Grain */
+    .grain-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 999; opacity: 0.35; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.05 0 0 0 0 0.05 0 0 0 0.4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* ==========================================================================
+       STICKY HEADER & PROGRESS BAR
+       ========================================================================== */
+    .header-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg-header);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--border-main);
+      padding: 10px 24px;
+      transition: background-color 0.3s;
+    }
+    .header-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px;
+    }
+    .header-brand {
+      display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;
+    }
+    .brand-icon {
+      font-size: 26px; line-height: 1;
+    }
+    .brand-titles h1 {
+      font-family: 'Trirong', serif; font-size: 17px; font-weight: 600;
+      color: var(--forest-deepest); line-height: 1.2;
+    }
+    .author-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--terracotta);
+      letter-spacing: 0.04em;
+    }
+
+    .header-nav {
+      display: flex; gap: 4px; align-items: center; flex-wrap: wrap;
+    }
+    .nav-pill {
+      font-family: 'Bai Jamjuree', sans-serif; font-size: 12px; font-weight: 500;
+      color: var(--ink-secondary); text-decoration: none; padding: 5px 9px;
+      border-radius: 4px; transition: all 0.2s; white-space: nowrap;
+    }
+    .nav-pill:hover {
+      background: var(--bg-card); color: var(--terracotta);
+    }
+
+    .header-actions {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .unit-switch-group {
+      display: flex; background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 6px; padding: 2px;
+    }
+    .unit-btn {
+      background: transparent; border: none; font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px;
+      cursor: pointer; color: var(--ink-muted); transition: all 0.2s;
+    }
+    .unit-btn.active {
+      background: var(--terracotta); color: #ffffff;
+    }
+    .btn-icon {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      width: 32px; height: 32px; border-radius: 6px; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+      font-size: 14px; color: var(--ink-primary); transition: all 0.2s;
+    }
+    .btn-icon:hover {
+      background: var(--bg-card-alt); border-color: var(--terracotta);
+    }
+    .mobile-menu-btn {
+      display: none;
+    }
+
+    .reading-progress {
+      position: absolute; bottom: 0; left: 0; height: 2.5px;
+      background: linear-gradient(90deg, var(--terracotta), var(--gold));
+      width: 0%; transition: width 0.1s ease-out;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      display: none; position: fixed; inset: 0; z-index: 1500;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    }
+    .mobile-drawer.active { display: block; }
+    .mobile-drawer-content {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 300px;
+      background: var(--bg-page); border-left: 2px solid var(--border-main);
+      padding: 24px; display: flex; flex-direction: column; gap: 16px;
+      overflow-y: auto; box-shadow: var(--shadow-lg);
+    }
+    .mobile-drawer-head {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border-main); padding-bottom: 12px;
+    }
+    .mobile-nav-links {
+      display: flex; flex-direction: column; gap: 8px; margin-top: 10px;
+    }
+    .mobile-nav-links a {
+      font-size: 15px; font-weight: 500; color: var(--forest-deepest);
+      text-decoration: none; padding: 8px 12px; border-radius: 6px;
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+    }
+
+    /* ==========================================================================
+       HERO & STATS COUNTERS
+       ========================================================================== */
+    .hero-section {
+      background: var(--bg-page);
+      border: 1.5px solid var(--border-main);
+      border-radius: 12px;
+      margin-top: 24px;
+      padding: 44px 48px 36px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+    .hero-eyebrow {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 16px;
+    }
+    .badge-nature {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--terracotta); font-weight: 600;
+      background: var(--bg-card-alt); padding: 4px 10px; border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+    }
+    .hero-meta {
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .hero-title {
+      font-family: 'Trirong', serif; font-size: 46px; line-height: 1.15;
+      font-weight: 600; color: var(--forest-deepest); margin-bottom: 8px;
+    }
+    .accent-italic {
+      font-style: italic; color: var(--forest); font-weight: 400;
+    }
+    .hero-sub {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ink-muted); margin-bottom: 24px;
+    }
+
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 340px; gap: 36px; align-items: start;
+    }
+    .hero-lede {
+      font-size: 15.5px; line-height: 1.8; color: var(--ink-secondary);
+    }
+    .hero-lede strong { color: var(--forest-deepest); }
+
+    .citation-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-main);
+      border-left: 4px solid var(--terracotta);
+      border-radius: 6px;
+      padding: 16px 18px;
+    }
+    .cite-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+    }
+    .cite-src {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--terracotta); font-weight: 600;
+    }
+    .cite-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--moss);
+      background: var(--badge-bg); padding: 2px 6px; border-radius: 3px;
+    }
+    .cite-title {
+      font-family: 'Trirong', serif; font-style: italic; font-size: 13.5px;
+      color: var(--forest-deepest); line-height: 1.45; margin-bottom: 6px;
+    }
+    .cite-doi {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-muted);
+      line-height: 1.5;
+    }
+    .cite-doi a { color: var(--terracotta); text-decoration: none; }
+    .cite-doi a:hover { text-decoration: underline; }
+
+    /* 4-Stat Metric Bar */
+    .metrics-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      margin-top: 20px;
+    }
+    .metric-card {
+      background: var(--bg-page); border: 1.5px solid var(--border-main);
+      border-radius: 10px; padding: 20px 22px; position: relative;
+      box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .metric-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px;
+    }
+    .metric-value-wrap {
+      display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px;
+    }
+    .metric-val {
+      font-family: 'Trirong', serif; font-size: 38px; line-height: 1;
+      font-weight: 600; color: var(--forest-deepest);
+    }
+    .metric-unit {
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500;
+      color: var(--terracotta);
+    }
+    .metric-sub {
+      font-size: 12px; line-height: 1.45; color: var(--ink-muted);
+    }
+
+    /* ==========================================================================
+       SECTION STRUCTURES
+       ========================================================================== */
+    .content-section {
+      background: var(--bg-page); border: 1.5px solid var(--border-main);
+      border-radius: 12px; margin-top: 32px; padding: 36px 40px;
+      box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 26px; border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 16px;
+    }
+    .section-title-wrap {
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+      color: var(--terracotta); letter-spacing: 0.1em;
+    }
+    .section-title {
+      font-family: 'Trirong', serif; font-size: 26px; font-weight: 600;
+      color: var(--forest-deepest); line-height: 1.25;
+    }
+    .section-kicker {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ink-muted);
+    }
+
+    /* §01 Thesis Comparison */
+    .vs-container {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      border: 1.5px solid var(--border-main); border-radius: 8px; overflow: hidden;
+    }
+    .vs-panel { padding: 28px; }
+    .vs-panel.left {
+      background: rgba(61, 104, 73, 0.08); border-right: 1.5px solid var(--border-main);
+    }
+    .vs-panel.right { background: rgba(184, 100, 59, 0.07); }
+    .vs-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+      text-transform: uppercase; font-weight: 600; margin-bottom: 8px;
+    }
+    .vs-panel.left .vs-tag { color: var(--forest); }
+    .vs-panel.right .vs-tag { color: var(--rust); }
+    .vs-heading {
+      font-family: 'Trirong', serif; font-size: 22px; font-weight: 600;
+      color: var(--forest-deepest); margin-bottom: 12px;
+    }
+    .vs-desc { font-size: 13.5px; line-height: 1.65; color: var(--ink-secondary); margin-bottom: 16px; }
+    .vs-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .vs-list li {
+      font-size: 13px; line-height: 1.55; color: var(--ink-secondary); position: relative; padding-left: 20px;
+    }
+    .vs-panel.left .vs-list li::before {
+      content: "✓"; position: absolute; left: 0; color: var(--forest); font-weight: 700;
+    }
+    .vs-panel.right .vs-list li::before {
+      content: "✕"; position: absolute; left: 0; color: var(--rust); font-weight: 700;
+    }
+
+    .thesis-quote-strip {
+      margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+      align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 22px 26px;
+    }
+    .thesis-text { font-size: 13.5px; line-height: 1.7; color: var(--ink-secondary); }
+    .thesis-quote {
+      font-family: 'Trirong', serif; font-style: italic; font-size: 18px; line-height: 1.45;
+      color: var(--forest); border-left: 3px solid var(--gold); padding-left: 20px;
+    }
+
+    /* §02 Global Realms */
+    .global-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;
+    }
+    .world-map-box {
+      background: var(--bg-card); border: 1.5px solid var(--border-main);
+      border-radius: 8px; padding: 16px; text-align: center;
+    }
+    .world-map-img {
+      width: 100%; height: auto; border-radius: 4px; display: block;
+      cursor: zoom-in; transition: transform 0.2s, filter 0.2s;
+    }
+    .world-map-img:hover { filter: contrast(1.05); }
+    .world-map-caption {
+      font-size: 11px; line-height: 1.5; color: var(--ink-muted); margin-top: 10px; text-align: left;
+    }
+
+    .paper-zoom-selector {
+      margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px;
+      border-top: 1px dashed var(--border-subtle); padding-top: 12px;
+      align-items: center;
+    }
+    .zoom-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-muted);
+      text-transform: uppercase; width: 100%; margin-bottom: 2px;
+    }
+    .zoom-btn {
+      background: var(--bg-card-alt); border: 1px solid var(--border-main);
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 8px;
+      border-radius: 4px; cursor: pointer; color: var(--ink-primary); transition: all 0.2s;
+    }
+    .zoom-btn:hover, .zoom-btn.active {
+      background: var(--terracotta); color: #ffffff; border-color: var(--terracotta);
+    }
+    .zoom-info-card {
+      margin-top: 10px; background: var(--bg-card-alt); border-left: 3px solid var(--terracotta);
+      padding: 10px 14px; font-size: 12px; line-height: 1.5; text-align: left;
+    }
+
+    .biome-bars-wrap {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .biome-item {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 16px 18px;
+    }
+    .biome-item.thai-realm {
+      border: 1.5px solid var(--terracotta); background: var(--bg-card-alt);
+    }
+    .biome-header {
+      display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;
+    }
+    .biome-name {
+      font-family: 'Trirong', serif; font-size: 16px; font-weight: 600; color: var(--forest-deepest);
+    }
+    .biome-region {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ink-muted);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .biome-metric {
+      font-family: 'Trirong', serif; font-size: 24px; font-weight: 600; color: var(--forest);
+    }
+    .biome-item.thai-realm .biome-metric { color: var(--terracotta); }
+    .bar-track {
+      height: 10px; background: rgba(61, 104, 73, 0.12); border-radius: 4px; overflow: hidden;
+      margin: 8px 0 6px;
+    }
+    .bar-fill {
+      height: 100%; background: linear-gradient(90deg, var(--moss), var(--leaf-light));
+      border-radius: 4px; transition: width 0.4s ease;
+    }
+    .biome-item.thai-realm .bar-fill {
+      background: linear-gradient(90deg, var(--terracotta), var(--gold));
+    }
+    .biome-note { font-size: 11.5px; color: var(--ink-muted); }
+
+    .top5-countries-card {
+      margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 16px 18px;
+    }
+    .top5-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--terracotta); font-weight: 600; margin-bottom: 12px;
+    }
+    .top5-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+    }
+    .country-badge {
+      background: var(--bg-card-alt); border: 1px solid var(--border-subtle);
+      border-radius: 6px; padding: 10px 6px; text-align: center; transition: transform 0.2s;
+    }
+    .country-badge:hover { transform: translateY(-2px); border-color: var(--terracotta); }
+    .country-flag { font-size: 24px; line-height: 1; margin-bottom: 6px; }
+    .country-th { font-family: 'Trirong', serif; font-size: 13px; font-weight: 600; color: var(--forest-deepest); }
+    .country-en { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--ink-muted); text-transform: uppercase; }
+
+    /* ==========================================================================
+       §03 THAILAND RASTER DEEP DIVE & HOTSPOTS
+       ========================================================================== */
+    .thai-analysis-layout {
+      display: grid; grid-template-columns: 460px 1fr; gap: 32px; align-items: start;
+    }
+    .thai-map-frame {
+      background: var(--bg-card); border: 1.5px solid var(--border-main);
+      border-radius: 8px; padding: 18px; position: relative; text-align: center;
+    }
+    .map-container-relative {
+      position: relative; width: 100%; border-radius: 4px; overflow: hidden;
+    }
+    .thai-map-img {
+      width: 100%; max-height: 580px; object-fit: contain; display: block;
+      margin: 0 auto; border-radius: 4px; cursor: zoom-in;
+    }
+
+    /* Hotspot Pins Overlay */
+    .hotspot-pin {
+      position: absolute; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--terracotta); color: #ffffff; border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4); display: flex; align-items: center;
+      justify-content: center; font-size: 12px; cursor: pointer; transition: all 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    .hotspot-pin:hover, .hotspot-pin.active {
+      transform: translate(-50%, -50%) scale(1.3); background: var(--forest-deepest);
+      z-index: 10;
+    }
+
+    .color-ramp-bar { margin: 14px 0 6px; }
+    .ramp-gradient {
+      height: 14px; border-radius: 4px; border: 1px solid var(--border-main);
+      background: linear-gradient(90deg, #d7191c 0%, #fdae61 25%, #ffffc0 50%, #a6d96a 75%, #1a9641 100%);
+    }
+    .ramp-labels {
+      display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--ink-muted); margin-top: 4px;
+    }
+    .thai-map-cap {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--ink-muted); margin-top: 10px;
+    }
+
+    /* Hotspot Quick Selector Strip */
+    .hotspots-strip {
+      margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border-subtle);
+      text-align: left;
+    }
+    .hotspots-strip-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-muted);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .hotspot-tag-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+    .hotspot-tag {
+      background: var(--bg-card-alt); border: 1px solid var(--border-subtle);
+      font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer;
+      color: var(--ink-primary); transition: all 0.2s;
+    }
+    .hotspot-tag:hover, .hotspot-tag.active {
+      background: var(--forest-deepest); color: #ffffff;
+    }
+
+    /* Region Selector Pills */
+    .region-pills {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+    }
+    .region-pill {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px;
+      cursor: pointer; color: var(--ink-primary); transition: all 0.2s;
+    }
+    .region-pill:hover, .region-pill.active {
+      background: var(--forest-deepest); color: var(--bg-page); border-color: var(--forest-deepest);
+    }
+
+    .region-detail-card {
+      background: var(--bg-card); border: 1.5px solid var(--border-main);
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 16px; box-shadow: var(--shadow-sm);
+    }
+    .reg-head {
+      display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;
+    }
+    .reg-title {
+      font-family: 'Trirong', serif; font-size: 18px; font-weight: 600; color: var(--forest-deepest);
+    }
+    .reg-score {
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;
+      color: var(--terracotta); background: var(--bg-card-alt); padding: 2px 8px; border-radius: 4px;
+    }
+    .reg-desc {
+      font-size: 13px; line-height: 1.6; color: var(--ink-secondary); margin-bottom: 10px;
+    }
+    .reg-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      padding-top: 10px; border-top: 1px dashed var(--border-subtle);
+    }
+    .reg-stat-item .r-lbl { font-size: 10.5px; color: var(--ink-muted); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+    .reg-stat-item .r-val { font-size: 13.5px; font-weight: 600; color: var(--forest-deepest); }
+
+    /* Tier Breakdown */
+    .tier-slots-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .stat-slot-row {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 6px; padding: 10px 14px; display: grid;
+      grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+    }
+    .tier-color-dot { width: 14px; height: 14px; border-radius: 3px; }
+    .slot-info .slot-name { font-family: 'Trirong', serif; font-size: 14px; font-weight: 600; color: var(--forest-deepest); }
+    .slot-info .slot-desc { font-size: 11px; color: var(--ink-muted); line-height: 1.35; }
+    .slot-val-box { text-align: right; font-family: 'Trirong', serif; font-size: 16px; font-weight: 600; color: var(--terracotta); }
+    .slot-val-box small { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-muted); }
+
+    /* Self-Contained SVG Histogram Container */
+    .histogram-wrapper {
+      margin-top: 18px; background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 16px 20px;
+    }
+    .hist-head {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .hist-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+      color: var(--ink-muted); font-weight: 600;
+    }
+    .hist-stats-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--terracotta);
+      background: var(--bg-card-alt); padding: 2px 8px; border-radius: 4px;
+    }
+    .svg-histogram-chart {
+      width: 100%; height: 160px; overflow: visible; display: block;
+    }
+    .hist-bar {
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    .hist-bar:hover { opacity: 0.85; filter: brightness(1.15); }
+    .hist-tooltip {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: var(--ink-primary);
+    }
+
+    /* Map Zoom Hint */
+    .map-zoom-hint {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--terracotta); background: var(--bg-card-alt);
+      padding: 4px 12px; border-radius: 4px; margin-bottom: 10px;
+      cursor: pointer; transition: all 0.2s; border: 1px dashed var(--border-accent);
+    }
+    .map-zoom-hint:hover { background: var(--bg-card); transform: scale(1.02); }
+
+    /* ==========================================================================
+       §04 FILTERABLE FOREST TYPES (NEW CORE FEATURE)
+       ========================================================================== */
+    .forest-filter-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+      gap: 12px; margin-bottom: 22px; background: var(--bg-card); padding: 14px 18px;
+      border-radius: 8px; border: 1px solid var(--border-main);
+    }
+    .filter-pills-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .forest-filter-btn {
+      background: var(--bg-card-alt); border: 1px solid var(--border-subtle);
+      font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px;
+      cursor: pointer; color: var(--ink-secondary); transition: all 0.2s;
+    }
+    .forest-filter-btn:hover, .forest-filter-btn.active {
+      background: var(--forest-deepest); color: #ffffff; border-color: var(--forest-deepest);
+    }
+    .forest-search-box {
+      display: flex; align-items: center; background: var(--bg-page); border: 1px solid var(--border-main);
+      border-radius: 6px; padding: 4px 10px; width: 220px;
+    }
+    .forest-search-input {
+      border: none; background: transparent; font-family: inherit; font-size: 12px;
+      color: var(--ink-primary); width: 100%; outline: none;
+    }
+
+    .forest-cards-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    }
+    .forest-card {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 18px; display: flex; flex-direction: column;
+      box-shadow: var(--shadow-sm); transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+    .forest-card:hover {
+      transform: translateY(-3px); border-color: var(--terracotta); box-shadow: var(--shadow-md);
+    }
+    .fc-top {
+      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
+    }
+    .fc-icon { font-size: 26px; }
+    .fc-score-badge {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    .fc-score-high { background: rgba(34, 197, 94, 0.15); color: #15803d; }
+    .fc-score-med { background: rgba(234, 179, 8, 0.18); color: #a16207; }
+    .fc-score-low { background: rgba(239, 68, 68, 0.15); color: #b91c1c; }
+
+    .fc-name-th {
+      font-family: 'Trirong', serif; font-size: 17px; font-weight: 600; color: var(--forest-deepest);
+      margin-bottom: 2px;
+    }
+    .fc-name-en {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ink-muted);
+      text-transform: uppercase; margin-bottom: 10px;
+    }
+    .fc-metric-row {
+      display: flex; justify-content: space-between; font-size: 11.5px;
+      padding: 6px 0; border-top: 1px dashed var(--border-subtle); color: var(--ink-secondary);
+    }
+    .fc-species-tag {
+      margin-top: 10px; font-size: 11px; line-height: 1.5; color: var(--ink-muted);
+      background: var(--bg-card-alt); padding: 8px 10px; border-radius: 4px;
+    }
+    .fc-strategy-tag {
+      margin-top: 8px; font-size: 11.5px; font-weight: 500; color: var(--forest);
+    }
+
+    /* Forest Detail Modal */
+    .forest-modal {
+      position: fixed; inset: 0; z-index: 2200; background: rgba(0, 0, 0, 0.7);
+      display: none; align-items: center; justify-content: center; padding: 24px;
+      backdrop-filter: blur(6px);
+    }
+    .forest-modal.active { display: flex; }
+    .forest-modal-card {
+      background: var(--bg-page); border: 2px solid var(--border-main); border-radius: 12px;
+      max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px;
+      box-shadow: var(--shadow-lg); position: relative;
+    }
+    .forest-modal-close {
+      position: absolute; top: 18px; right: 20px; background: none; border: none;
+      font-size: 20px; cursor: pointer; color: var(--ink-muted);
+    }
+
+    /* ==========================================================================
+       §05 8 MACHINE LEARNING PREDICTORS
+       ========================================================================== */
+    .pred-cards-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    }
+    .pred-item-card {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 20px 18px; display: flex; flex-direction: column;
+      box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pred-item-card:hover {
+      transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--terracotta);
+    }
+    .pred-icon-circle {
+      width: 40px; height: 40px; border-radius: 8px; background: var(--forest-deepest);
+      color: var(--bg-page); display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 12px;
+    }
+    .pred-title-en {
+      font-family: 'Trirong', serif; font-size: 15px; font-weight: 600; color: var(--forest-deepest);
+      line-height: 1.25;
+    }
+    .pred-title-th {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-muted);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-top: 3px;
+    }
+    .pred-body {
+      font-size: 12px; line-height: 1.55; color: var(--ink-secondary); margin: 10px 0 14px;
+      flex-grow: 1;
+    }
+    .pred-badge {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px;
+      align-self: flex-start;
+    }
+    .pred-badge.pos { background: rgba(34, 197, 94, 0.12); color: #15803d; }
+    .pred-badge.neg { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+    .pred-badge.context { background: rgba(234, 179, 8, 0.14); color: #a16207; }
+    .pred-badge.struct { background: rgba(99, 102, 241, 0.12); color: #4338ca; }
+
+    /* Sandbox Simulator */
+    .pred-sandbox-box {
+      margin-top: 24px; padding: 24px; background: var(--bg-card);
+      border: 1.5px solid var(--border-main); border-radius: 10px;
+    }
+    .sandbox-head { margin-bottom: 16px; }
+    .sandbox-title {
+      font-family: 'Trirong', serif; font-size: 18px; font-weight: 600; color: var(--forest-deepest);
+    }
+    .sandbox-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+    .sandbox-controls {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    }
+    .control-item label {
+      display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      font-weight: 500; color: var(--ink-primary); margin-bottom: 6px;
+    }
+    .control-item input[type="range"] {
+      width: 100%; accent-color: var(--terracotta);
+    }
+    .control-val {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--terracotta);
+      font-weight: 600; text-align: right; margin-top: 4px;
+    }
+    .sandbox-output {
+      margin-top: 20px; padding: 16px 20px; background: var(--bg-card-alt);
+      border-radius: 8px; display: flex; align-items: center; justify-content: space-between;
+      border: 1px solid var(--border-subtle); gap: 20px;
+    }
+    .out-score-wrap { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+    .out-score-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-muted);
+      text-transform: uppercase;
+    }
+    .out-score-num {
+      font-family: 'Trirong', serif; font-size: 32px; font-weight: 700; color: var(--forest);
+    }
+    .out-recommendation { font-size: 13px; color: var(--ink-secondary); text-align: right; }
+
+    /* ==========================================================================
+       §06 METHODOLOGY STEPPER
+       ========================================================================== */
+    .method-steps-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+    }
+    .step-card {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 18px 12px; text-align: center;
+      position: relative;
+    }
+    .step-bubble {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--forest-deepest);
+      color: #ffffff; display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+      margin: 0 auto 10px;
+    }
+    .step-name {
+      font-family: 'Trirong', serif; font-size: 13px; font-weight: 600;
+      color: var(--forest-deepest); line-height: 1.3; margin-bottom: 6px;
+    }
+    .step-meta {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ink-muted);
+      line-height: 1.4;
+    }
+    .accuracy-banner {
+      margin-top: 24px; background: var(--forest-deepest); color: #ffffff;
+      border-radius: 8px; padding: 22px 28px; display: grid;
+      grid-template-columns: auto 1fr auto; gap: 26px; align-items: center;
+    }
+    .acc-percent {
+      font-family: 'Trirong', serif; font-size: 42px; font-weight: 700;
+      color: var(--gold); line-height: 1;
+    }
+    .acc-explain { font-size: 12.5px; line-height: 1.6; opacity: 0.92; }
+    .acc-tag-col {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--leaf-light); text-align: right; line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       §07 SCENARIOS COMPARISON & RESTORATION SIMULATOR
+       ========================================================================== */
+    .scenario-tabs {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;
+    }
+    .scenario-tab-btn {
+      background: var(--bg-card); border: 1.5px solid var(--border-main);
+      border-radius: 8px; padding: 14px 16px; text-align: left; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .scenario-tab-btn:hover, .scenario-tab-btn.active {
+      border-color: var(--terracotta); background: var(--bg-card-alt);
+      box-shadow: var(--shadow-sm);
+    }
+    .sc-tab-title {
+      font-family: 'Trirong', serif; font-size: 14.5px; font-weight: 600;
+      color: var(--forest-deepest); margin-bottom: 4px;
+    }
+    .sc-tab-sub {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-muted);
+    }
+
+    /* Scenario Matrix Table */
+    .scenario-matrix-card {
+      background: var(--bg-card); border: 1.5px solid var(--border-main);
+      border-radius: 8px; overflow-x: auto; margin-bottom: 28px;
+    }
+    .sc-table {
+      width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left;
+    }
+    .sc-table th, .sc-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border-subtle);
+    }
+    .sc-table th {
+      background: var(--bg-card-alt); font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; text-transform: uppercase; color: var(--ink-muted); font-weight: 600;
+    }
+    .sc-table tr.active-sc-row {
+      background: rgba(184, 100, 59, 0.08); font-weight: 600;
+    }
+
+    /* Simulator Container */
+    .simulator-container {
+      display: grid; grid-template-columns: 1fr 1.15fr; gap: 32px; align-items: start;
+      background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px;
+      padding: 24px;
+    }
+    .sim-inputs { display: flex; flex-direction: column; gap: 20px; }
+    .sim-input-row label {
+      display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; font-weight: 600; color: var(--forest-deepest); margin-bottom: 6px;
+    }
+    .sim-input-row input[type="range"] {
+      width: 100%; accent-color: var(--terracotta);
+    }
+    .sim-input-row .help-hint {
+      font-size: 11px; color: var(--ink-muted); margin-top: 4px;
+    }
+
+    .sim-results-panel {
+      background: var(--bg-card-alt); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 22px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .res-block-head {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--terracotta); font-weight: 600;
+    }
+    .res-metric-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .res-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 6px; padding: 12px 14px;
+    }
+    .res-card .rc-label { font-size: 11px; color: var(--ink-muted); font-family: 'JetBrains Mono', monospace; }
+    .res-card .rc-value {
+      font-family: 'Trirong', serif; font-size: 24px; font-weight: 700;
+      color: var(--forest-deepest); line-height: 1.15; margin: 4px 0 2px;
+    }
+    .res-card .rc-sub { font-size: 11px; color: var(--ink-muted); }
+
+    .savings-highlight {
+      background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 6px; padding: 14px 18px; display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .sh-title { font-size: 13px; font-weight: 600; color: #15803d; }
+    .sh-val {
+      font-family: 'Trirong', serif; font-size: 22px; font-weight: 700; color: #15803d;
+    }
+
+    /* ==========================================================================
+       §08 4 POLICY USE CASES
+       ========================================================================== */
+    .apps-cards-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    }
+    .app-card {
+      background: var(--bg-card); border: 1px solid var(--border-main);
+      border-radius: 8px; padding: 24px 20px; display: flex; flex-direction: column;
+      text-align: center; box-shadow: var(--shadow-sm); transition: transform 0.2s;
+    }
+    .app-card:hover { transform: translateY(-3px); border-color: var(--terracotta); }
+    .app-icon-wrap {
+      width: 48px; height: 48px; border-radius: 50%; background: var(--forest-deepest);
+      color: var(--gold); display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin: 0 auto 14px;
+    }
+    .app-title {
+      font-family: 'Trirong', serif; font-size: 16px; font-weight: 600;
+      color: var(--forest-deepest); margin-bottom: 6px; line-height: 1.3;
+    }
+    .app-agency {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--terracotta);
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .app-desc { font-size: 12px; line-height: 1.6; color: var(--ink-secondary); }
+
+    /* ==========================================================================
+       FOOTER & APPLICANT PROFILE
+       ========================================================================== */
+    .footer-section {
+      background: var(--forest-deepest); color: var(--bg-page);
+      border-radius: 12px; margin-top: 36px; padding: 44px 52px;
+      display: grid; grid-template-columns: 1fr 240px; gap: 40px; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .footer-left .f-eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--leaf-light); margin-bottom: 6px;
+    }
+    .footer-left .f-name {
+      font-family: 'Trirong', serif; font-size: 26px; font-weight: 600; color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .footer-left .f-role {
+      font-size: 13.5px; opacity: 0.88; margin-bottom: 18px;
+    }
+    .footer-left .f-refs {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.7;
+      line-height: 1.75; letter-spacing: 0.02em;
+    }
+
+    .qr-card-wrap {
+      background: var(--bg-card); border-radius: 8px; padding: 16px;
+      text-align: center; color: var(--forest-deepest); box-shadow: var(--shadow-md);
+    }
+    .qr-image-box {
+      display: flex; justify-content: center; margin-bottom: 8px;
+    }
+    .qr-image-box img {
+      width: 130px; height: 130px; display: block; border-radius: 4px;
+    }
+    .qr-caption {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink-muted);
+    }
+    .qr-link-btn {
+      display: inline-block; margin-top: 8px; font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--terracotta); text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       MAP LIGHTBOX WITH SMOOTH DRAG & ZOOM
+       ========================================================================== */
+    .lightbox-modal {
+      position: fixed; inset: 0; z-index: 2500; background: rgba(0, 0, 0, 0.88);
+      display: none; align-items: center; justify-content: center; padding: 24px;
+      backdrop-filter: blur(8px);
+    }
+    .lightbox-modal.active { display: flex; }
+    .lightbox-content {
+      background: var(--bg-page); border: 2px solid var(--border-main);
+      border-radius: 12px; width: 94vw; max-width: 1200px; height: 90vh;
+      display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-lg);
+    }
+    .lightbox-toolbar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding: 12px 20px; background: var(--bg-header); border-bottom: 1.5px solid var(--border-main);
+    }
+    .lightbox-title {
+      font-family: 'Trirong', serif; font-size: 16px; font-weight: 600; color: var(--forest-deepest);
+    }
+    .lightbox-img-wrapper {
+      flex-grow: 1; overflow: hidden; display: flex; align-items: center; justify-content: center;
+      background: #08140c; position: relative; cursor: grab; user-select: none;
+    }
+    .lightbox-img-wrapper:active { cursor: grabbing; }
+    .lightbox-img-wrapper img {
+      max-width: 90%; max-height: 90%; object-fit: contain;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5); border-radius: 4px; pointer-events: none;
+    }
+
+    /* ==========================================================================
+       PRESENTATION SLIDE MODE OVERLAY
+       ========================================================================== */
+    .presentation-modal {
+      position: fixed; inset: 0; z-index: 2000; background: var(--bg-body);
+      display: none; flex-direction: column; padding: 32px 48px;
+      overflow-y: auto;
+    }
+    .presentation-modal.active { display: flex; }
+    .pres-top-bar {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+    }
+    .pres-slide-num {
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--terracotta); font-weight: 600;
+    }
+    .pres-slide-card {
+      background: var(--bg-page); border: 2px solid var(--border-main); border-radius: 12px;
+      padding: 48px; max-width: 1040px; margin: auto; box-shadow: var(--shadow-lg); width: 100%;
+    }
+    .pres-controls {
+      display: flex; justify-content: center; gap: 16px; margin-top: 24px;
+    }
+    .pres-btn {
+      background: var(--forest-deepest); color: var(--bg-page); border: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 10px 20px;
+      border-radius: 6px; cursor: pointer; transition: background 0.2s;
+    }
+    .pres-btn:hover { background: var(--terracotta); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+      .global-layout { grid-template-columns: 1fr; }
+      .thai-analysis-layout { grid-template-columns: 1fr; }
+      .forest-cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .pred-cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .method-steps-grid { grid-template-columns: repeat(3, 1fr); }
+      .scenario-tabs { grid-template-columns: repeat(2, 1fr); }
+      .simulator-container { grid-template-columns: 1fr; }
+      .apps-cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-section { grid-template-columns: 1fr; text-align: center; }
+      .qr-card-wrap { margin: 0 auto; }
+      .header-nav { display: none; }
+      .mobile-menu-btn { display: flex; }
+    }
+    @media (max-width: 640px) {
+      .app-wrap { padding: 0 16px 60px; }
+      .hero-section { padding: 28px 20px; }
+      .content-section { padding: 26px 18px; }
+      .hero-title { font-size: 32px; }
+      .metrics-bar { grid-template-columns: 1fr; }
+      .vs-container { grid-template-columns: 1fr; }
+      .top5-grid { grid-template-columns: repeat(2, 1fr); }
+      .forest-cards-grid { grid-template-columns: 1fr; }
+      .pred-cards-grid { grid-template-columns: 1fr; }
+      .method-steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .scenario-tabs { grid-template-columns: 1fr; }
+      .sandbox-controls { grid-template-columns: 1fr; }
+      .sandbox-output { flex-direction: column; align-items: flex-start; text-align: left; }
+      .out-recommendation { text-align: left; }
+      .apps-cards-grid { grid-template-columns: 1fr; }
+      .res-metric-grid { grid-template-columns: 1fr; }
+      .reg-stats { grid-template-columns: 1fr; }
+    }
+
+    /* Print Stylesheet */
+    @media print {
+      body { background: white !important; color: black !important; }
+      .header-bar, .grain-overlay, .header-actions, .unit-switch-group, .btn-icon, .mobile-menu-btn { display: none !important; }
+      .hero-section, .content-section, .footer-section { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
+      .app-wrap { max-width: 100% !important; padding: 0 !important; }
+      @page { size: A3 portrait; margin: 1cm; }
+    }
+  </style>
+<style>#dynamic-qr-canvas canvas, #dynamic-qr-canvas > img:not([src$=".svg"]), #qrcode canvas, #qrcode > img:not([src$=".svg"]) { border:16px solid white; box-sizing:content-box; } @media print { #qr-customizer-box {display:none !important;} }</style>
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+
+  <!-- STICKY NAVIGATION BAR -->
+  <header class="header-bar">
+    <div class="header-inner">
+      <a href="#hero" class="header-brand">
+        <div class="brand-icon">🌱</div>
+        <div class="brand-titles">
+          <h1>ศักยภาพการฟื้นฟูป่าตามธรรมชาติในประเทศไทย</h1>
+          <div class="author-tag">Williams et al. (Nature 2024) · อภินันต์ เนียมสุทธิ 011233</div>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="header-nav">
+        <a href="#thesis" class="nav-pill">01 แนวคิด</a>
+        <a href="#global" class="nav-pill">02 โลก</a>
+        <a href="#thailand" class="nav-pill">03 ไทย & แผนที่</a>
+        <a href="#forests" class="nav-pill">04 ชนิดป่า</a>
+        <a href="#predictors" class="nav-pill">05 ตัวแปร</a>
+        <a href="#method" class="nav-pill">06 ระเบียบวิธี</a>
+        <a href="#scenarios" class="nav-pill">07 สถานการณ์</a>
+        <a href="#policy" class="nav-pill">08 นโยบาย</a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Unit Switcher -->
+        <div class="unit-switch-group" title="สลับหน่วยวัดพื้นที่ (Unit Switcher)">
+          <button class="unit-btn active" id="unit-mha" onclick="setUnit('mha')">Mha</button>
+          <button class="unit-btn" id="unit-rai" onclick="setUnit('rai')">ล้านไร่</button>
+          <button class="unit-btn" id="unit-km2" onclick="setUnit('km2')">km²</button>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="สลับธีม กระดาษ/มืด">
+          🌓
+        </button>
+
+        <!-- Presentation Slide Mode -->
+        <button class="btn-icon" onclick="openPresentation()" title="โหมดนำเสนอสำหรับการสัมภาษณ์">
+          📽️
+        </button>
+
+        <!-- Print PDF -->
+        <button class="btn-icon" onclick="window.print()" title="พิมพ์หรือส่งออก PDF">
+          🖨️
+        </button>
+
+        <!-- Mobile Drawer Hamburger -->
+        <button class="btn-icon mobile-menu-btn" onclick="toggleMobileDrawer()" title="เมนูหลัก">
+          ☰
+        </button>
+      </div>
+    </div>
+    <div class="reading-progress" id="reading-progress"></div>
+  </header>
+
+  <!-- MOBILE SLIDE DRAWER -->
+  <div class="mobile-drawer" id="mobile-drawer" onclick="toggleMobileDrawer()">
+    <div class="mobile-drawer-content" onclick="event.stopPropagation()">
+      <div class="mobile-drawer-head">
+        <strong style="color:var(--forest-deepest);">เมนูนำทาง (Navigation)</strong>
+        <button class="btn-icon" onclick="toggleMobileDrawer()">✕</button>
+      </div>
+      <div class="mobile-nav-links">
+        <a href="#hero" onclick="toggleMobileDrawer()">หน้าแรก (Executive Summary)</a>
+        <a href="#thesis" onclick="toggleMobileDrawer()">§ 01 แนวคิด: ฟื้นเอง vs ปลูกใหม่</a>
+        <a href="#global" onclick="toggleMobileDrawer()">§ 02 ภาพรวมโลก & 4 เขตชีวภูมิศาสตร์</a>
+        <a href="#thailand" onclick="toggleMobileDrawer()">§ 03 ประเทศไทย: Raster & แผนที่ 30-m</a>
+        <a href="#forests" onclick="toggleMobileDrawer()">§ 04 ชนิดป่าและศักยภาพจำแนกประเภท</a>
+        <a href="#predictors" onclick="toggleMobileDrawer()">§ 05 ตัวแปรทำนาย 8 ชั้น (Predictors)</a>
+        <a href="#method" onclick="toggleMobileDrawer()">§ 06 ระเบียบวิธี & ความแม่นยำ 87.9%</a>
+        <a href="#scenarios" onclick="toggleMobileDrawer()">§ 07 เปรียบเทียบสถานการณ์ & จำลองคาร์บอน</a>
+        <a href="#policy" onclick="toggleMobileDrawer()">§ 08 ข้อเสนอนโยบายสำหรับไทย</a>
+      </div>
+      <div style="margin-top:auto; padding-top:16px; border-top:1px solid var(--border-subtle); text-align:center;">
+        <button class="pres-btn" style="width:100%;" onclick="openPresentation(); toggleMobileDrawer();">เปิดโหมดนำเสนอ 📽️</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-wrap">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-eyebrow">
+        <span class="badge-nature">NATURE RESEARCH · VOL 636 · 2024</span>
+        <span class="hero-meta">NATURE-BASED CLIMATE SOLUTIONS · THAILAND PNV DATASET</span>
+      </div>
+
+      <h1 class="hero-title">
+        ศักยภาพการฟื้นฟูป่า<br />
+        <span class="accent-italic">ตามธรรมชาติในประเทศไทย</span>
+      </h1>
+      <div class="hero-sub">
+        POTENTIAL FOR NATURAL REGENERATION · INDOMALAYAN TROPICAL CONTEXT · 30-M RESOLUTION
+      </div>
+
+      <div class="hero-grid">
+        <p class="hero-lede">
+          งานวิจัยสำคัญในวารสาร <strong>Nature</strong> โดย <strong>Williams et al. (2024)</strong> ได้สร้างแผนที่ศักยภาพการฟื้นฟูป่าเขตร้อนทั่วโลก โดยชี้ว่าพื้นที่ป่าที่ถูกตัดถางทิ้งไว้มีศักยภาพ <strong>"ฟื้นตัวได้เองตามธรรมชาติ (Natural Regeneration)"</strong> สูงถึง <strong id="hero-global-area" class="data-unit-global">215 ล้านเฮกตาร์</strong> — มีขนาดใหญ่กว่าประเทศเม็กซิโกทั้งประเทศ<br /><br />
+          สำหรับ <strong>ประเทศไทย</strong> ซึ่งตั้งอยู่ในเขตชีวภูมิศาสตร์ <em>Indomalayan tropics</em> ข้อมูลเชิงพื้นที่ความละเอียด 30 เมตรนี้ เป็นเครื่องมือทรงพลังในการชี้เป้า <strong>พื้นที่ที่คุ้มค่าการลงทุนฟื้นฟูที่สุด</strong> โดยไม่ต้องพึ่งพางบประมาณการเพาะกล้าไม้และการปลูกซ้ำที่มีต้นทุนสูง
+        </p>
+
+        <div class="citation-card">
+          <div class="cite-header">
+            <span class="cite-src">ORIGINAL SOURCE PAPER</span>
+            <span class="cite-tag">PEER-REVIEWED</span>
+          </div>
+          <div class="cite-title">
+            "Global potential for natural regeneration in deforested tropical regions"
+          </div>
+          <div class="cite-doi">
+            Williams, B. A. et al. (2024) · <strong>Nature 636</strong>, 131–137.<br />
+            <a href="https://doi.org/10.1038/s41586-024-08106-4" target="_blank" rel="noopener">DOI: 10.1038/s41586-024-08106-4 ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY STATS COUNTER BAR -->
+    <div class="metrics-bar">
+      <div class="metric-card">
+        <div class="metric-label">ศักยภาพรวมทั่วโลก</div>
+        <div class="metric-value-wrap">
+          <span class="metric-val" id="stat-global-val">215</span>
+          <span class="metric-unit" id="stat-global-unit">Mha</span>
+        </div>
+        <div class="metric-sub">ใหญ่กว่าพื้นที่ประเทศเม็กซิโกทั้งประเทศ</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">การกักเก็บคาร์บอน (30 ปี)</div>
+        <div class="metric-value-wrap">
+          <span class="metric-val">23.4</span>
+          <span class="metric-unit">Gt C</span>
+        </div>
+        <div class="metric-sub">เทียบเท่า ~85.8 Gt CO₂e (ช่วง 21.1–25.7)</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">ความละเอียดเชิงพื้นที่</div>
+        <div class="metric-value-wrap">
+          <span class="metric-val">30</span>
+          <span class="metric-unit">เมตร</span>
+        </div>
+        <div class="metric-sub">วิเคราะห์ระดับพิกเซลจากดาวเทียม Landsat</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">ความถูกต้องแบบจำลอง</div>
+        <div class="metric-value-wrap">
+          <span class="metric-val">87.9</span>
+          <span class="metric-unit">%</span>
+        </div>
+        <div class="metric-sub">Validation บนชุดข้อมูล 4.87 ล้านจุดอิสระ</div>
+      </div>
+    </div>
+
+    <!-- §01 CORE THESIS COMPARISON -->
+    <section class="content-section" id="thesis">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 01</span>
+          <h2 class="section-title">แนวคิดสำคัญ · ทำไม "ฟื้นฟูเอง" จึงคุ้มกว่า "ปลูกใหม่"</h2>
+        </div>
+        <span class="section-kicker">PARADIGM SHIFT IN RESTORATION</span>
+      </div>
+
+      <div class="vs-container">
+        <!-- Natural Regeneration -->
+        <div class="vs-panel left">
+          <div class="vs-tag">NATURAL REGENERATION</div>
+          <h3 class="vs-heading">ปล่อยให้ธรรมชาติฟื้นตัวเอง</h3>
+          <p class="vs-desc">
+            ฟื้นฟูป่าโดยอาศัยศักยภาพเดิมของระบบนิเวศ — การกระจายเมล็ดตามธรรมชาติ (Seed rain) จากนกและสัตว์ป่า, ไม้ที่แตกหน่อจากตอไม้เดิม (Coppicing), และการตั้งตัวของกล้าไม้ตามฤดูกาล
+          </p>
+          <ul class="vs-list">
+            <li><strong>ต้นทุนต่ำมาก:</strong> ไม่ต้องเตรียมเรือนเพาะชำ ไม่ต้องซื้อกล้าไม้ ลดค่าใช้จ่ายลงได้ 70–90% (~4,000 บาท/ไร่)</li>
+            <li><strong>ความหลากหลายทางชีวภาพสูงกว่า:</strong> ชนิดพันธุ์ไม้ท้องถิ่นงอกตามนิเวศธรรมชาติ ไม่เกิด monoculture</li>
+            <li><strong>โครงสร้างป่าทนทาน:</strong> ต้นไม้พัฒนาระบบรากแก้วที่แข็งแกร่ง ทนต่อภาวะแห้งแล้งและไฟป่าได้ดีกว่า</li>
+            <li><strong>เหมาะกับพื้นที่ต่อเชื่อม:</strong> ได้ผลเลิศในพื้นที่ที่มีผืนป่าอนุรักษ์เดิมอยู่ใกล้เคียง</li>
+          </ul>
+        </div>
+
+        <!-- Active Tree Planting -->
+        <div class="vs-panel right">
+          <div class="vs-tag">ACTIVE TREE PLANTING</div>
+          <h3 class="vs-heading">การปลูกป่าด้วยมือ</h3>
+          <p class="vs-desc">
+            การฟื้นฟูป่าแบบดั้งเดิมที่เน้นการเตรียมกล้าไม้ ปรับหน้าดิน ขุดหลุม และปลูกต้นไม้เป็นแนวแถว ซึ่งต้องอาศัยการดูแลรดน้ำและกำจัดวัชพืชต่อเนื่องหลายปี
+          </p>
+          <ul class="vs-list">
+            <li><strong>ต้นทุนต่อพื้นที่สูงมาก:</strong> เฉลี่ย 35,000 – 60,000+ บาท/ไร่ สำหรับการเตรียมพื้นที่และดูแล 3 ปี</li>
+            <li><strong>ชนิดไม้น้อยชนิด:</strong> มักจำกัดเฉพาะไม้เศรษฐกิจหรือไม้โตเร็วบางชนิด เสี่ยงต่อศัตรูพืชระบาด</li>
+            <li><strong>ภาระการดูแลระยะยาว:</strong> ต้องการแรงงานและน้ำสูง หากขาดการบำรุงรักษากล้ามักแห้งตาย</li>
+            <li><strong>ความล้มเหลวหากเลือกชนิดผิด:</strong> ชนิดไม้ที่ไม่ตรงกับ microclimate ท้องถิ่นจะตายในฤดูแล้ง</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="thesis-quote-strip">
+        <div class="thesis-text">
+          <p>
+            งานวิจัยของ Williams et al. ได้สร้าง <strong>จุดเปลี่ยนทางวิทยาศาสตร์</strong>: ในอดีต แผนที่การฟื้นฟูมักพึ่งพา <em>Expert Opinion</em> หรือสมมติฐานว่า "เดิมพื้นที่นี้น่าจะเคยเป็นป่าอะไร" แต่งานนี้ใช้ <strong>ข้อมูลดาวเทียมจริงในช่วงปี 2000–2016</strong> ของพื้นที่ที่เคยถูกตัดถางและ <em>ได้ฟื้นตัวกลับมาเป็นป่าสำเร็จด้วยตัวเองจริง</em> (รวม 31.6 Mha จาก 4.78 ล้าน patches) มาเป็นชุดข้อมูลฝึกสอน (Training Data) ของ Machine Learning
+          </p>
+        </div>
+        <div class="thesis-quote">
+          "ที่ใดที่ป่าเคยฟื้นตัวเองได้สำเร็จ — ที่นั้นมีโอกาสฟื้นตัวเองได้อีก ภายใต้เงื่อนไขและบริบทสิ่งแวดล้อมที่ใกล้เคียงกัน"
+        </div>
+      </div>
+    </section>
+
+    <!-- §02 GLOBAL OVERVIEW & PANTROPICAL REALMS -->
+    <section class="content-section" id="global">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 02</span>
+          <h2 class="section-title">ภาพรวมระดับโลก · การกระจายตัวใน 4 เขตชีวภูมิศาสตร์</h2>
+        </div>
+        <span class="section-kicker">PANTROPICAL DISTRIBUTION (WILLIAMS ET AL. 2024)</span>
+      </div>
+
+      <div class="global-layout">
+        <!-- World Map & Box Explorer -->
+        <div class="world-map-box">
+          <div class="map-zoom-hint" onclick="openMapLightbox('world-pnv-map.webp', 'ภาพรวมระดับโลก: ศักยภาพการฟื้นฟูป่าตามธรรมชาติ (Williams et al. 2024 Nature Fig 1)')">
+            🔍 คลิกเพื่อขยายแผนที่โลกขนาดเต็ม (Zoomable Pantropical Map)
+          </div>
+          <img src="world-pnv-map.webp" alt="Global Potential for Natural Regeneration (Williams et al. 2024)" class="world-map-img" id="world-map-img" onclick="openMapLightbox(this.src, 'ภาพรวมระดับโลก: ศักยภาพการฟื้นฟูป่าตามธรรมชาติ (Williams et al. 2024 Nature Fig 1)')" />
+          
+          <div class="paper-zoom-selector">
+            <span class="zoom-label">คลิกสำรวจเคสซูมอิน (Fig 1 a–f):</span>
+            <button class="zoom-btn" onclick="showZoomCase('a')">Box a</button>
+            <button class="zoom-btn" onclick="showZoomCase('b')">Box b</button>
+            <button class="zoom-btn active" onclick="showZoomCase('c')">Box c (เอเชียตะวันออกเฉียงใต้)</button>
+            <button class="zoom-btn" onclick="showZoomCase('d')">Box d</button>
+            <button class="zoom-btn" onclick="showZoomCase('e')">Box e</button>
+            <button class="zoom-btn" onclick="showZoomCase('f')">Box f</button>
+          </div>
+
+          <div class="zoom-info-card" id="zoom-info-card" style="display: block;">
+            <strong>Box c · Southeast Asia (เอเชียตะวันออกเฉียงใต้ & ประเทศไทย):</strong> พื้นที่ป่าดิบชื้นและป่าผลัดใบเขตร้อนที่มีความลาดชันสูงและอยู่ติดกับแนวเทือกเขาผืนป่าดั้งเดิม มีโอกาสฟื้นตัวตามธรรมชาติสูงมาก แต่เผชิญแรงกดดันจากการขยายตัวของพืชไร่เชิงเดี่ยว
+          </div>
+
+          <div class="world-map-caption">
+            <strong>ที่มา:</strong> ดัดแปลงจาก Williams et al. (2024) <em>Nature</em> Fig 1 (แถบกลาง) · <strong>สีส้ม-แดง:</strong> ศักยภาพฟื้นฟูธรรมชาติสูง · <strong>สีเขียว:</strong> พื้นที่ป่าที่มีต้นไม้ปกคลุมในปัจจุบัน (Tree Cover)
+          </div>
+        </div>
+
+        <!-- Biome Breakdown Bars -->
+        <div class="biome-bars-wrap">
+          <!-- Neotropics -->
+          <div class="biome-item">
+            <div class="biome-header">
+              <div>
+                <div class="biome-name">Neotropics</div>
+                <div class="biome-region">อเมริกากลางและอเมริกาใต้</div>
+              </div>
+              <div class="biome-metric"><span class="realm-val" data-val="98">98</span> <small class="metric-unit">Mha</small></div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+            <div class="biome-note">คิดเป็น 45.6% ของโลก — บราซิล เม็กซิโก และโคลอมเบีย เป็นศูนย์กลางหลัก</div>
+          </div>
+
+          <!-- Indomalayan -->
+          <div class="biome-item thai-realm">
+            <div class="biome-header">
+              <div>
+                <div class="biome-name">Indomalayan tropics <span style="color:var(--terracotta); font-size:12px;">← ประเทศไทย</span></div>
+                <div class="biome-region">เอเชียตะวันออกเฉียงใต้ · อินเดีย · จีนตอนใต้</div>
+              </div>
+              <div class="biome-metric"><span class="realm-val" data-val="90">90</span> <small class="metric-unit">Mha</small></div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 91.8%;"></div></div>
+            <div class="biome-note">คิดเป็น 41.9% ของโลก — ประเทศไทยอยู่ในเขตนี้ร่วมกับอินโดนีเซียและจีน</div>
+          </div>
+
+          <!-- Afrotropics -->
+          <div class="biome-item">
+            <div class="biome-header">
+              <div>
+                <div class="biome-name">Afrotropics</div>
+                <div class="biome-region">แอฟริกาใต้สะฮารา · ลุ่มน้ำคองโก</div>
+              </div>
+              <div class="biome-metric"><span class="realm-val" data-val="26">~26</span> <small class="metric-unit">Mha</small></div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 26.5%;"></div></div>
+            <div class="biome-note">คิดเป็น 12.1% ของโลก — สาธารณรัฐประชาธิปไตยคองโก (DRC) กาบอง และคองโก</div>
+          </div>
+
+          <!-- Australian -->
+          <div class="biome-item">
+            <div class="biome-header">
+              <div>
+                <div class="biome-name">Australian tropics</div>
+                <div class="biome-region">ออสเตรเลียตอนเหนือ</div>
+              </div>
+              <div class="biome-metric"><span class="realm-val" data-val="0.4">0.4</span> <small class="metric-unit">Mha</small></div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
+            <div class="biome-note">คิดเป็น 0.2% ของโลก — พื้นที่จำกัดแต่มีชนิดพันธุ์เฉพาะถิ่นสูงยิ่ง</div>
+          </div>
+
+          <!-- Top 5 Countries -->
+          <div class="top5-countries-card">
+            <div class="top5-title">5 ประเทศที่มีศักยภาพสูงสุด (รวมคิดเป็น 52% ของโลก)</div>
+            <div class="top5-grid">
+              <div class="country-badge">
+                <div class="country-flag">🇧🇷</div>
+                <div class="country-th">บราซิล</div>
+                <div class="country-en">Brazil (49 Mha)</div>
+              </div>
+              <div class="country-badge">
+                <div class="country-flag">🇮🇩</div>
+                <div class="country-th">อินโดนีเซีย</div>
+                <div class="country-en">Indonesia (34 Mha)</div>
+              </div>
+              <div class="country-badge">
+                <div class="country-flag">🇨🇳</div>
+                <div class="country-th">จีน</div>
+                <div class="country-en">China (13 Mha)</div>
+              </div>
+              <div class="country-badge">
+                <div class="country-flag">🇲🇽</div>
+                <div class="country-th">เม็กซิโก</div>
+                <div class="country-en">Mexico (10 Mha)</div>
+              </div>
+              <div class="country-badge">
+                <div class="country-flag">🇨🇴</div>
+                <div class="country-th">โคลอมเบีย</div>
+                <div class="country-en">Colombia (8 Mha)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §03 THAILAND RASTER DEEP-DIVE & INTERACTIVE MAP EXPLORER -->
+    <section class="content-section" id="thailand">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 03</span>
+          <h2 class="section-title">ประเทศไทย · ผลการวิเคราะห์ข้อมูล Raster ระดับชาติ & แผนที่ตอบโต้</h2>
+        </div>
+        <span class="section-kicker">EXTRACTED FROM 02_THAILAND_PNV_FINAL.TIF</span>
+      </div>
+
+      <div class="thai-analysis-layout">
+        <!-- Thai Raster Map Frame With Interactive Hotspots -->
+        <div class="thai-map-frame">
+          <div class="map-zoom-hint" onclick="openMapLightbox('thailand-pnv-map.webp', 'แผนที่ศักยภาพการฟื้นฟูป่าตามธรรมชาติในประเทศไทย (30-m Raster จาก 02_thailand_pnv_final.tif)')">
+            🔍 คลิกเพื่อขยายแผนที่ไทยขนาดเต็ม (Zoom 30-m Raster Map)
+          </div>
+
+          <div class="map-container-relative">
+            <img src="thailand-pnv-map.webp" alt="Thailand PNV Raster Map" class="thai-map-img" id="thai-map-img" onclick="openMapLightbox(this.src, 'แผนที่ศักยภาพการฟื้นฟูป่าตามธรรมชาติในประเทศไทย (30-m Raster จาก 02_thailand_pnv_final.tif)')" />
+            
+            <!-- Geo Hotspots Overlaid on Map -->
+            <div class="hotspot-pin" style="top: 25%; left: 35%;" onclick="selectHotspot('inthanon')" title="ดอยอินทนนท์ / เชียงใหม่ (PNV 48)">🏔️</div>
+            <div class="hotspot-pin" style="top: 48%; left: 32%;" onclick="selectHotspot('wefcom')" title="ผืนป่าตะวันตก (ห้วยขาแข้ง) (PNV 62)">🐅</div>
+            <div class="hotspot-pin" style="top: 38%; left: 70%;" onclick="selectHotspot('phuphan')" title="เทือกเขาภูพาน (อีสาน) (PNV 32)">🌾</div>
+            <div class="hotspot-pin" style="top: 50%; left: 56%;" onclick="selectHotspot('khaoyai')" title="ดงพญาเย็น-เขาใหญ่ (PNV 54)">🐘</div>
+            <div class="hotspot-pin" style="top: 65%; left: 42%;" onclick="selectHotspot('pranburi')" title="ปากน้ำปราณ / ป่าชายเลน (PNV 76)">🦀</div>
+            <div class="hotspot-pin" style="top: 88%; left: 55%;" onclick="selectHotspot('halabala')" title="ฮาลา-บาลา / ป่าดิบชื้นใต้ (PNV 78)">🌴</div>
+          </div>
+          
+          <div class="color-ramp-bar">
+            <div class="ramp-gradient"></div>
+            <div class="ramp-labels">
+              <span>0 (ต่ำมาก)</span>
+              <span>25 (ต่ำ)</span>
+              <span>50 (ปานกลาง)</span>
+              <span>75 (สูง)</span>
+              <span>100 (สูงมาก)</span>
+            </div>
+          </div>
+          
+          <!-- Hotspots Tag Pills -->
+          <div class="hotspots-strip">
+            <div class="hotspots-strip-title">จุดยุทธศาสตร์สำคัญ (Clickable Geo-Hotspots):</div>
+            <div class="hotspot-tag-pills">
+              <span class="hotspot-tag" onclick="selectHotspot('wefcom')">ผืนป่าตะวันตก (62)</span>
+              <span class="hotspot-tag" onclick="selectHotspot('khaoyai')">เขาใหญ่-ทับลาน (54)</span>
+              <span class="hotspot-tag" onclick="selectHotspot('inthanon')">ดอยอินทนนท์ (48)</span>
+              <span class="hotspot-tag" onclick="selectHotspot('halabala')">ฮาลา-บาลา (78)</span>
+              <span class="hotspot-tag" onclick="selectHotspot('pranburi')">ป่าชายเลนปราณบุรี (76)</span>
+              <span class="hotspot-tag" onclick="selectHotspot('phuphan')">ภูพาน-สกลนคร (32)</span>
+            </div>
+          </div>
+
+          <div class="thai-map-cap">
+            RENDERED FROM 02_THAILAND_PNV_FINAL.TIF · 30-M PIXEL RESOLUTION · EPSG:4326 (QGIS)
+          </div>
+        </div>
+
+        <!-- Thai Statistics & Regional Intelligence -->
+        <div class="thai-data-panel">
+          
+          <!-- Regional Selector Pills -->
+          <div class="region-pills">
+            <button class="region-pill active" onclick="selectThaiRegion('all')">ภาพรวมทั้งประเทศ</button>
+            <button class="region-pill" onclick="selectThaiRegion('north')">ภาคเหนือ (ภูเขาชัน)</button>
+            <button class="region-pill" onclick="selectThaiRegion('northeast')">ภาคอีสาน (ที่ราบสูง)</button>
+            <button class="region-pill" onclick="selectThaiRegion('central')">ภาคกลาง (เกษตรลุ่มน้ำ)</button>
+            <button class="region-pill" onclick="selectThaiRegion('south')">ภาคใต้ (ป่าดิบชื้น)</button>
+            <button class="region-pill" onclick="selectThaiRegion('west')">ภาคตะวันตก (ผืนป่ามรดก)</button>
+          </div>
+
+          <!-- Dynamic Regional Card -->
+          <div class="region-detail-card" id="region-detail-card">
+            <div class="reg-head">
+              <span class="reg-title" id="reg-title">ภาพรวมประเทศไทย (National Summary)</span>
+              <span class="reg-score" id="reg-score">คะแนนเฉลี่ย: 37 / 100</span>
+            </div>
+            <p class="reg-desc" id="reg-desc">
+              ประเทศไทยมีพื้นที่ที่ถูกตัดถางและมีศักยภาพฟื้นฟูตามธรรมชาติวิเคราะห์รวม 44.76 ล้านเฮกตาร์ (~87% ของพื้นที่ประเทศ) โดยพื้นที่ส่วนใหญ่ (48.1%) อยู่ในระดับปานกลาง ซึ่งสามารถเร่งกระบวนการฟื้นตัวได้ด้วยการช่วยฟื้นฟูธรรมชาติ (Assisted Natural Regeneration - ANR)
+            </p>
+            <div class="reg-stats">
+              <div class="reg-stat-item">
+                <div class="r-lbl">พื้นที่รวมที่วิเคราะห์</div>
+                <div class="r-val" id="reg-area">44.76 Mha (279.75 ล้านไร่)</div>
+              </div>
+              <div class="reg-stat-item">
+                <div class="r-lbl">ศักยภาพสูง (>66)</div>
+                <div class="r-val" id="reg-high">3.94 Mha (24.63 ล้านไร่)</div>
+              </div>
+              <div class="reg-stat-item">
+                <div class="r-lbl">คาร์บอนประมาณการ (30 ปี)</div>
+                <div class="r-val" id="reg-carbon">~4,870 Mt C (~17.8 Gt CO₂e)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3-Tier Breakdown Slots -->
+          <div class="tier-slots-wrap">
+            <div class="stat-slot-row">
+              <div class="tier-color-dot" style="background: #1a9641;"></div>
+              <div class="slot-info">
+                <div class="slot-name">ศักยภาพสูง (คะแนน 66–100)</div>
+                <div class="slot-desc">พื้นที่ใกล้ป่าสมบูรณ์ แนวกันชนอุทยานฯ และคาบสมุทรภาคใต้ — ปล่อยฟื้นเองได้ทันทีโดยแทบไม่ต้องปลูก</div>
+              </div>
+              <div class="slot-val-box">
+                <span class="tier-val" data-mha="3.94">3.94 Mha</span>
+                <small>8.8% ของพื้นที่วิเคราะห์</small>
+              </div>
+            </div>
+
+            <div class="stat-slot-row">
+              <div class="tier-color-dot" style="background: #fdae61;"></div>
+              <div class="slot-info">
+                <div class="slot-name">ศักยภาพปานกลาง (คะแนน 33–66)</div>
+                <div class="slot-desc">สัดส่วนที่ใหญ่ที่สุดของไทย — พื้นที่เชิงเขา ไร่หมุนเวียนเก่า ต้องการเทคนิค ANR ป้องกันไฟและกำจัดวัชพืชช่วย</div>
+              </div>
+              <div class="slot-val-box">
+                <span class="tier-val" data-mha="21.54">21.54 Mha</span>
+                <small>48.1% ของพื้นที่วิเคราะห์</small>
+              </div>
+            </div>
+
+            <div class="stat-slot-row">
+              <div class="tier-color-dot" style="background: #d7191c;"></div>
+              <div class="slot-info">
+                <div class="slot-name">ศักยภาพต่ำ (คะแนน 0–33)</div>
+                <div class="slot-desc">กระจุกตัวในที่ราบลุ่มเจ้าพระยาและที่ราบสูงอีสาน — เมล็ดเข้าไม่ถึง ดินเสื่อมสภาพจากการทำเกษตรเข้มข้นหลายทศวรรษ</div>
+              </div>
+              <div class="slot-val-box">
+                <span class="tier-val" data-mha="19.29">19.29 Mha</span>
+                <small>43.1% ของพื้นที่วิเคราะห์</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Self-Contained Standalone Interactive SVG Histogram -->
+          <div class="histogram-wrapper">
+            <div class="hist-head">
+              <span class="hist-title">การกระจายตัวของคะแนนศักยภาพ (PNV Distribution Histogram)</span>
+              <span class="hist-stats-tag">Mean: 37 · Median: 42</span>
+            </div>
+            
+            <svg class="svg-histogram-chart" viewBox="0 0 500 150" id="pnv-svg-hist">
+              <!-- Y Axis Grid Lines -->
+              <line x1="40" y1="20" x2="480" y2="20" stroke="var(--border-subtle)" stroke-dasharray="2,2" />
+              <line x1="40" y1="55" x2="480" y2="55" stroke="var(--border-subtle)" stroke-dasharray="2,2" />
+              <line x1="40" y1="90" x2="480" y2="90" stroke="var(--border-subtle)" stroke-dasharray="2,2" />
+              <line x1="40" y1="125" x2="480" y2="125" stroke="var(--border-main)" />
+
+              <!-- Y Labels -->
+              <text x="32" y="24" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="end">20%</text>
+              <text x="32" y="59" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="end">15%</text>
+              <text x="32" y="94" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="end">10%</text>
+              <text x="32" y="128" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="end">0%</text>
+
+              <!-- Histogram Bars (10 Bins) -->
+              <!-- 0-10: 12.4% -> height 62px -->
+              <rect class="hist-bar" x="50" y="63" width="36" height="62" rx="3" fill="#d7191c" onclick="filterByBin('0-10', 12.4)" data-bin="0-10" data-pct="12.4"><title>0-10: 12.4% (5.55 Mha)</title></rect>
+              <!-- 11-20: 15.2% -> height 76px -->
+              <rect class="hist-bar" x="92" y="49" width="36" height="76" rx="3" fill="#d7191c" onclick="filterByBin('11-20', 15.2)" data-bin="11-20" data-pct="15.2"><title>11-20: 15.2% (6.80 Mha)</title></rect>
+              <!-- 21-30: 15.5% -> height 77.5px -->
+              <rect class="hist-bar" x="134" y="47.5" width="36" height="77.5" rx="3" fill="#d7191c" onclick="filterByBin('21-30', 15.5)" data-bin="21-30" data-pct="15.5"><title>21-30: 15.5% (6.94 Mha)</title></rect>
+              <!-- 31-40: 17.8% -> height 89px -->
+              <rect class="hist-bar" x="176" y="36" width="36" height="89" rx="3" fill="#fdae61" onclick="filterByBin('31-40', 17.8)" data-bin="31-40" data-pct="17.8"><title>31-40: 17.8% (7.97 Mha)</title></rect>
+              <!-- 41-50: 18.2% -> height 91px -->
+              <rect class="hist-bar" x="218" y="34" width="36" height="91" rx="3" fill="#fdae61" onclick="filterByBin('41-50', 18.2)" data-bin="41-50" data-pct="18.2"><title>41-50: 18.2% (8.15 Mha)</title></rect>
+              <!-- 51-60: 12.1% -> height 60.5px -->
+              <rect class="hist-bar" x="260" y="64.5" width="36" height="60.5" rx="3" fill="#fdae61" onclick="filterByBin('51-60', 12.1)" data-bin="51-60" data-pct="12.1"><title>51-60: 12.1% (5.42 Mha)</title></rect>
+              <!-- 61-70: 5.2% -> height 26px -->
+              <rect class="hist-bar" x="302" y="99" width="36" height="26" rx="3" fill="#a6d96a" onclick="filterByBin('61-70', 5.2)" data-bin="61-70" data-pct="5.2"><title>61-70: 5.2% (2.33 Mha)</title></rect>
+              <!-- 71-80: 2.4% -> height 12px -->
+              <rect class="hist-bar" x="344" y="113" width="36" height="12" rx="3" fill="#1a9641" onclick="filterByBin('71-80', 2.4)" data-bin="71-80" data-pct="2.4"><title>71-80: 2.4% (1.07 Mha)</title></rect>
+              <!-- 81-90: 0.9% -> height 4.5px -->
+              <rect class="hist-bar" x="386" y="120.5" width="36" height="4.5" rx="2" fill="#1a9641" onclick="filterByBin('81-90', 0.9)" data-bin="81-90" data-pct="0.9"><title>81-90: 0.9% (0.40 Mha)</title></rect>
+              <!-- 91-100: 0.3% -> height 2px -->
+              <rect class="hist-bar" x="428" y="123" width="36" height="2" rx="1" fill="#1a9641" onclick="filterByBin('91-100', 0.3)" data-bin="91-100" data-pct="0.3"><title>91-100: 0.3% (0.13 Mha)</title></rect>
+
+              <!-- Mean Marker (37) -->
+              <line x1="205" y1="15" x2="205" y2="125" stroke="#b8643b" stroke-width="1.8" stroke-dasharray="3,3" />
+              <text x="205" y="12" font-size="8.5" fill="#b8643b" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">Mean 37</text>
+
+              <!-- Median Marker (42) -->
+              <line x1="228" y1="22" x2="228" y2="125" stroke="#1d4a30" stroke-width="1.8" stroke-dasharray="3,3" />
+              <text x="228" y="20" font-size="8.5" fill="#1d4a30" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">Med 42</text>
+
+              <!-- X Axis Labels -->
+              <text x="68" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">0-10</text>
+              <text x="110" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">11-20</text>
+              <text x="152" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">21-30</text>
+              <text x="194" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">31-40</text>
+              <text x="236" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">41-50</text>
+              <text x="278" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">51-60</text>
+              <text x="320" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">61-70</text>
+              <text x="362" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">71-80</text>
+              <text x="404" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">81-90</text>
+              <text x="446" y="139" font-size="8" fill="var(--ink-muted)" font-family="JetBrains Mono" text-anchor="middle">91-100</text>
+            </svg>
+            <div id="hist-selected-info" style="font-size:11.5px; color:var(--ink-secondary); margin-top:8px; text-align:center;">
+              *คลิกที่แท่งกราฟเพื่อดูสถิติพื้นที่และประเภทป่าที่อยู่ในช่วงคะแนนนั้น
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- §04 FILTERABLE FOREST TYPES IN THAILAND (NEW CORE MODULE) -->
+    <section class="content-section" id="forests">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 04</span>
+          <h2 class="section-title">ประเภทป่าในประเทศไทย & การประเมินศักยภาพจำแนกประเภท</h2>
+        </div>
+        <span class="section-kicker">8 MAJOR FOREST TYPES & RESTORATION TRAITS</span>
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="forest-filter-bar">
+        <div class="filter-pills-group">
+          <button class="forest-filter-btn active" onclick="filterForestCategory('all')">ทั้งหมด (8 ชนิด)</button>
+          <button class="forest-filter-btn" onclick="filterForestCategory('evergreen')">ป่าไม่ผลัดใบ (Evergreen)</button>
+          <button class="forest-filter-btn" onclick="filterForestCategory('deciduous')">ป่าผลัดใบ (Deciduous)</button>
+          <button class="forest-filter-btn" onclick="filterForestCategory('wetland')">ป่าชายเลน & ชุ่มน้ำ (Wetland)</button>
+        </div>
+
+        <div class="forest-search-box">
+          <span style="font-size:13px; margin-right:6px; color:var(--ink-muted);">🔍</span>
+          <input type="text" id="forest-search" class="forest-search-input" placeholder="ค้นหาชนิดป่าหรือพันธุ์ไม้..." oninput="searchForestTypes(this.value)" />
+        </div>
+      </div>
+
+      <!-- Forest Cards Grid -->
+      <div class="forest-cards-grid" id="forest-cards-grid">
+        <!-- 1. Tropical Rain Forest -->
+        <div class="forest-card" data-cat="evergreen" data-pnv="high" onclick="openForestModal('rainforest')">
+          <div class="fc-top">
+            <div class="fc-icon">🌴</div>
+            <span class="fc-score-badge fc-score-high">PNV 82 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าดิบชื้น</div>
+          <div class="fc-name-en">Tropical Rain Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~150 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>Passive Regen (90%)</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> ตะเคียนทอง, ยางนา, ตะเคียนชันตาแมว, สยา
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ ฝนตกชุก เมล็ดสมบูรณ์ ฟื้นตัวได้เร็วที่สุดโดยไม่ต้องปลูก
+          </div>
+        </div>
+
+        <!-- 2. Dry Evergreen Forest -->
+        <div class="forest-card" data-cat="evergreen" data-pnv="high" onclick="openForestModal('dry_evergreen')">
+          <div class="fc-top">
+            <div class="fc-icon">🌳</div>
+            <span class="fc-score-badge fc-score-high">PNV 68 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าดิบแล้ง</div>
+          <div class="fc-name-en">Dry Evergreen Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~120 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>ANR (70%) + ปลูกเสริม</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> กระบาก, ยางแดง, พะยอม, ตะเคียนหิน
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ เขาใหญ่-ภูเขียว ดินสมบูรณ์ ต้องการกำจัดวัชพืชเบิกนำ
+          </div>
+        </div>
+
+        <!-- 3. Hill Evergreen Forest -->
+        <div class="forest-card" data-cat="evergreen" data-pnv="med" onclick="openForestModal('hill_evergreen')">
+          <div class="fc-top">
+            <div class="fc-icon">🏔️</div>
+            <span class="fc-score-badge fc-score-med">PNV 64 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าดิบเขา</div>
+          <div class="fc-name-en">Hill Evergreen Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~115 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>การจัดการไฟร่วมชุมชน</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> ก่อสน, ก่อเดือย, มณฑาดอย, กำลังเสือโคร่ง
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ ความสูง >1,000 ม. แหล่งต้นน้ำลำธาร ควบคุมไฟป่า
+          </div>
+        </div>
+
+        <!-- 4. Mixed Deciduous Forest -->
+        <div class="forest-card" data-cat="deciduous" data-pnv="med" onclick="openForestModal('mixed_deciduous')">
+          <div class="fc-top">
+            <div class="fc-icon">🍂</div>
+            <span class="fc-score-badge fc-score-med">PNV 52 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าเบญจพรรณ</div>
+          <div class="fc-name-en">Mixed Deciduous Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~95 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>ANR + การแตกหน่อตอ</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> สัก, ประดู่, แดง, มะค่าโมง, ไผ่ป่า
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ ผืนป่าตะวันตก ไม้มีค่าสูง แตกหน่อจากตอเก่าได้ดี
+          </div>
+        </div>
+
+        <!-- 5. Dry Dipterocarp Forest -->
+        <div class="forest-card" data-cat="deciduous" data-pnv="low" onclick="openForestModal('dry_dipterocarp')">
+          <div class="fc-top">
+            <div class="fc-icon">🪵</div>
+            <span class="fc-score-badge fc-score-low">PNV 38 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าเต็งรัง</div>
+          <div class="fc-name-en">Dry Dipterocarp Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~65 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>ปรับปรุงดิน + ปลูกเสริม</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> เต็ง, รัง, พลวง, กราด, มะเกลือป่า
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ ภาคอีสาน ดินลูกรังแห้งแล้ง ต้องป้องกันไฟป่าซ้ำซาก
+          </div>
+        </div>
+
+        <!-- 6. Mangrove Forest -->
+        <div class="forest-card" data-cat="wetland" data-pnv="high" onclick="openForestModal('mangrove')">
+          <div class="fc-top">
+            <div class="fc-icon">🦀</div>
+            <span class="fc-score-badge fc-score-high">PNV 76 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าชายเลน</div>
+          <div class="fc-name-en">Mangrove Forest (Blue Carbon)</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~200 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>ฟื้นฟูระบบน้ำขึ้นลง</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> โกงกางใบใหญ่, โกงกางใบเล็ก, แสมขาว, ลำพู
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ Blue Carbon สูงสุด กักเก็บคาร์บอนในชั้นดินเลนลึก
+          </div>
+        </div>
+
+        <!-- 7. Peat Swamp Forest -->
+        <div class="forest-card" data-cat="wetland" data-pnv="med" onclick="openForestModal('peat_swamp')">
+          <div class="fc-top">
+            <div class="fc-icon">💧</div>
+            <span class="fc-score-badge fc-score-med">PNV 58 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าพรุ</div>
+          <div class="fc-name-en">Peat Swamp Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~150 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>รักษาระดับน้ำขังในพรุ</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> หวายน้ำ, มะฮัง, ยวนแหล, เสม็ดขาว
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ พรุโต๊ะแดง/ควนเคร็ง อ่อนไหวสูง ห้ามระบายน้ำออก
+          </div>
+        </div>
+
+        <!-- 8. Pine Forest -->
+        <div class="forest-card" data-cat="evergreen" data-pnv="med" onclick="openForestModal('pine_forest')">
+          <div class="fc-top">
+            <div class="fc-icon">🌲</div>
+            <span class="fc-score-badge fc-score-med">PNV 45 / 100</span>
+          </div>
+          <div class="fc-name-th">ป่าสนเขา</div>
+          <div class="fc-name-en">Pine Forest</div>
+          <div class="fc-metric-row">
+            <span>คาร์บอน (30 ปี)</span>
+            <strong style="color:var(--forest);">~80 Mg C/ha</strong>
+          </div>
+          <div class="fc-metric-row">
+            <span>การฟื้นฟูแนะนำ</span>
+            <strong>ควบคุมพืชรุกราน & ไฟ</strong>
+          </div>
+          <div class="fc-species-tag">
+            <strong>พันธุ์ไม้เด่น:</strong> สนสองใบ, สนสามใบ, ก่อแพะ
+          </div>
+          <div class="fc-strategy-tag">
+            ✓ ภูกระดึง-ภูเรือ ดินทรายสภาพกรด กล้าไม้งอกได้ตามฤดูกาล
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOREST MODAL DIALOG -->
+    <div class="forest-modal" id="forest-modal" onclick="closeForestModal()">
+      <div class="forest-modal-card" id="forest-modal-content" onclick="event.stopPropagation()">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- §05 8 MODEL PREDICTORS -->
+    <section class="content-section" id="predictors">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 05</span>
+          <h2 class="section-title">ตัวแปรทำนายในแบบจำลอง · 8 Predictors</h2>
+        </div>
+        <span class="section-kicker">RANDOM FOREST FEATURE SET (30-M RESOLUTION)</span>
+      </div>
+
+      <div class="pred-cards-grid">
+        <!-- 1. Cropland -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">🚜</div>
+          <div class="pred-title-en">Cropland Density</div>
+          <div class="pred-title-th">ความหนาแน่นเกษตรกรรม</div>
+          <div class="pred-body">
+            พื้นที่เกษตรกรรมหนาแน่นเป็นอุปสรรคสำคัญที่สุดในการฟื้นตัว เมล็ดพันธุ์จากป่าไม่สามารถกระจายข้ามแปลง และมีการรบกวนหน้าดินต่อเนื่อง
+          </div>
+          <span class="pred-badge neg">— ลบอย่างมีนัยสำคัญ</span>
+        </div>
+
+        <!-- 2. Distance to Urban -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">🏙️</div>
+          <div class="pred-title-en">Distance to Urban</div>
+          <div class="pred-title-th">ระยะห่างจากเมือง/ชุมชน</div>
+          <div class="pred-body">
+            พื้นที่ที่อยู่ห่างไกลจากเขตเมืองและถนนสายหลัก ได้รับแรงกดดันจากการรบกวนของมนุษย์น้อยกว่า เปิดโอกาสให้กล้าไม้เติบโตได้ต่อเนื่อง
+          </div>
+          <span class="pred-badge pos">+ บวก</span>
+        </div>
+
+        <!-- 3. Slope -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">⛰️</div>
+          <div class="pred-title-en">Slope (SRTM DEM)</div>
+          <div class="pred-title-th">ความลาดชันของภูมิประเทศ</div>
+          <div class="pred-body">
+            พื้นที่ลาดชันสูงมักไม่เหมาะกับการทำการเกษตร จึงมักถูกทิ้งร้างได้ง่ายและระบบนิเวศสามารถเข้าแทนที่เพื่อฟื้นตัวได้เร็วกว่า
+          </div>
+          <span class="pred-badge pos">+ บวก</span>
+        </div>
+
+        <!-- 4. NPP -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">☀️</div>
+          <div class="pred-title-en">NPP (MOD17A3)</div>
+          <div class="pred-title-th">ผลผลิตชีวมวลสุทธิ</div>
+          <div class="pred-body">
+            ปริมาณผลผลิตปฐมภูมิสุทธิสูงสะท้อนถึงแสงแดด อุณหภูมิ และความชื้นที่เหมาะสม ส่งผลให้พืชพรรณเจริญเติบโตสะสมคาร์บอนได้รวดเร็ว
+          </div>
+          <span class="pred-badge pos">+ บวก</span>
+        </div>
+
+        <!-- 5. Soil Properties -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">🪨</div>
+          <div class="pred-title-en">Soil Properties</div>
+          <div class="pred-title-th">คุณสมบัติดิน (SoilGrids)</div>
+          <div class="pred-body">
+            ความลึกของหน้าดิน เนื้อดิน และความจุในการอุ้มน้ำ เป็นปัจจัยจำกัดทางชีวภาพต่อการงอกและตั้งตัวของเมล็ดพันธุ์ไม้ป่า
+          </div>
+          <span class="pred-badge context">± ขึ้นกับบริบทพื้นที่</span>
+        </div>
+
+        <!-- 6. Biome -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">🌿</div>
+          <div class="pred-title-en">Biogeographic Biome</div>
+          <div class="pred-title-th">เขตชีวนิเวศหลัก</div>
+          <div class="pred-body">
+            เป็นกรอบโครงสร้างใหญ่ที่กำหนดชนิดป่าดั้งเดิม เช่น ป่าดิบชื้น (Rainforest) ย่อมมีอัตราการฟื้นตัวต่างจากป่าผลัดใบแล้ง (Dry Forest)
+          </div>
+          <span class="pred-badge struct">⚙️ โครงสร้างระบบ</span>
+        </div>
+
+        <!-- 7. Protected Neighbours -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">🛡️</div>
+          <div class="pred-title-en">Protected Neighbours</div>
+          <div class="pred-title-th">ระยะประชิดป่าอนุรักษ์</div>
+          <div class="pred-body">
+            การอยู่ติดกับอุทยานแห่งชาติหรือเขตรักษาพันธุ์สัตว์ป่า (WDPA) ช่วยให้ได้รับฝนเมล็ดพันธุ์ (Seed Rain) และมีสัตว์ช่วยแพร่กระจายพันธุ์ไม้
+          </div>
+          <span class="pred-badge pos">+ บวกสูงมาก</span>
+        </div>
+
+        <!-- 8. Land Cover History -->
+        <div class="pred-item-card">
+          <div class="pred-icon-circle">🗺️</div>
+          <div class="pred-title-en">Land Cover History</div>
+          <div class="pred-title-th">ประวัติการใช้ที่ดิน (ESA CCI)</div>
+          <div class="pred-body">
+            อนุกรมเวลาการใช้ประโยชน์ที่ดิน 300 เมตร ตั้งแต่ปี 1992–2015 บ่งชี้ระดับความเสื่อมโทรมและระยะเวลาที่แปลงดินเคยถูกรบกวน
+          </div>
+          <span class="pred-badge struct">⚙️ ประวัติศาสตร์พื้นที่</span>
+        </div>
+      </div>
+
+      <!-- Interactive Predictor Sandbox -->
+      <div class="pred-sandbox-box">
+        <div class="sandbox-head">
+          <div class="sandbox-title">เครื่องมือจำลองผลกระทบตัวแปร (Interactive Predictor Simulator)</div>
+          <div class="sandbox-sub">ทดลองปรับเปลี่ยนสภาพแวดล้อมเพื่อดูแนวโน้มคะแนนศักยภาพการฟื้นฟูของแปลงป่าตัวอย่าง</div>
+        </div>
+
+        <div class="sandbox-controls">
+          <div class="control-item">
+            <label>ระยะห่างป่าอนุรักษ์ (WDPA)</label>
+            <input type="range" id="sim-dist-prot" min="0" max="100" value="80" oninput="updatePredictorSim()" />
+            <div class="control-val" id="val-dist-prot">ติดแนวป่าเดิม (80%)</div>
+          </div>
+          <div class="control-item">
+            <label>ความหนาแน่นเกษตร (Cropland)</label>
+            <input type="range" id="sim-cropland" min="0" max="100" value="30" oninput="updatePredictorSim()" />
+            <div class="control-val" id="val-cropland">เกษตรบางเบา (30%)</div>
+          </div>
+          <div class="control-item">
+            <label>ความลาดชัน (Slope)</label>
+            <input type="range" id="sim-slope" min="0" max="100" value="65" oninput="updatePredictorSim()" />
+            <div class="control-val" id="val-slope">ภูเขาลาดชัน (65%)</div>
+          </div>
+          <div class="control-item">
+            <label>ผลผลิตชีวมวล (NPP / ฝน)</label>
+            <input type="range" id="sim-npp" min="0" max="100" value="70" oninput="updatePredictorSim()" />
+            <div class="control-val" id="val-npp">ความชื้นสูง (70%)</div>
+          </div>
+        </div>
+
+        <div class="sandbox-output">
+          <div class="out-score-wrap">
+            <span class="out-score-label">คะแนน PNV ที่คาดหมาย:</span>
+            <span class="out-score-num" id="sim-pnv-score">70 / 100</span>
+          </div>
+          <div class="out-recommendation" id="sim-pnv-rec">
+            <strong>ศักยภาพสูงมาก (High Potential):</strong> ระบบนิเวศมีแรงขับเคลื่อนตัวเองสูงมาก — แนะนำให้ใช้มาตรการ <em>Passive Natural Regeneration</em> โดยทำแนวกันไฟและหยุดการรบกวนของมนุษย์ ต้นไม้จะฟื้นตัวเองได้เร็วกว่าการปลูก
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §06 METHODOLOGY STEPPER -->
+    <section class="content-section" id="method">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 06</span>
+          <h2 class="section-title">ระเบียบวิธีวิจัยและการสร้างแผนที่ · Machine Learning Pipeline</h2>
+        </div>
+        <span class="section-kicker">RANDOM FOREST · 30-M RESOLUTION · GOOGLE EARTH ENGINE</span>
+      </div>
+
+      <div class="method-steps-grid">
+        <div class="step-card">
+          <div class="step-bubble">01</div>
+          <div class="step-name">ตรวจหาแปลงป่าที่ฟื้นตัวจริง</div>
+          <div class="step-meta">2000–2016 · 31.6 Mha<br />4.78M Patches</div>
+        </div>
+        <div class="step-card">
+          <div class="step-bubble">02</div>
+          <div class="step-name">สกัดตัวแปรสิ่งแวดล้อม 8 ชั้น</div>
+          <div class="step-meta">SRTM · MODIS<br />SoilGrids · ESA CCI</div>
+        </div>
+        <div class="step-card">
+          <div class="step-bubble">03</div>
+          <div class="step-name">ฝึกสอนแบบจำลอง Random Forest</div>
+          <div class="step-meta">Pantropical Grid<br />30-m Resolution</div>
+        </div>
+        <div class="step-card">
+          <div class="step-bubble">04</div>
+          <div class="step-name">ทำนายแผนที่ความน่าจะเป็น</div>
+          <div class="step-meta">Probability Surface<br />คะแนน 0–100</div>
+        </div>
+        <div class="step-card">
+          <div class="step-bubble">05</div>
+          <div class="step-name">ตรวจสอบความถูกต้องทางสถิติ</div>
+          <div class="step-meta">4.87M จุดอิสระ<br />Spatial k-fold CV</div>
+        </div>
+        <div class="step-card">
+          <div class="step-bubble">06</div>
+          <div class="step-name">เผยแพร่ข้อมูลเปิด GeoTIFF</div>
+          <div class="step-meta">Google Earth Engine<br />Nature Article Open Data</div>
+        </div>
+      </div>
+
+      <div class="accuracy-banner">
+        <div class="acc-percent">87.9%</div>
+        <div class="acc-explain">
+          <strong>ความถูกต้องของการตรวจสอบแบบจำลอง (Validation Accuracy):</strong> ได้รับการยืนยันบนชุดจุดข้อมูลอิสระภาคพื้นดินและภาพถ่ายดาวเทียมถึง <strong>4.87 ล้านจุด</strong><br />
+          <em style="opacity:0.85;">*ข้อสังเกตสำคัญสำหรับประเทศไทย: ในภูมิภาคเอเชียตะวันออกเฉียงใต้มีค่าความคลาดเคลื่อนมากกว่าค่าเฉลี่ยโลกเล็กน้อย เนื่องจากรูปแบบการเกษตรกรรมและกรรมสิทธิ์ที่ดินมีความซับซ้อน จึงควรนำแผนที่นี้ไปตรวจสอบร่วมกับข้อมูลสำรวจภาคสนาม (Ground-truthing) เสมอ</em>
+        </div>
+        <div class="acc-tag-col">
+          VALIDATION<br />ACCURACY<br />SPATIAL K-FOLD
+        </div>
+      </div>
+    </section>
+
+    <!-- §07 SCENARIO COMPARISON & RESTORATION SIMULATOR -->
+    <section class="content-section" id="scenarios">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 07</span>
+          <h2 class="section-title">การเปรียบเทียบเชิงสถานการณ์ & เครื่องคำนวณงบประมาณฟื้นฟู</h2>
+        </div>
+        <span class="section-kicker">SCENARIO COMPARISONS & BUDGET/CARBON MODEL</span>
+      </div>
+
+      <!-- 4 Policy Scenario Presets Tabs -->
+      <div class="scenario-tabs">
+        <div class="scenario-tab-btn" id="sc-tab-bau" onclick="selectScenario('bau')">
+          <div class="sc-tab-title">1. ปลูกแบบดั้งเดิม (BAU)</div>
+          <div class="sc-tab-sub">เน้นปลูกใหม่ 80% · ฟื้นเอง 20%</div>
+        </div>
+        <div class="scenario-tab-btn" id="sc-tab-balanced" onclick="selectScenario('balanced')">
+          <div class="sc-tab-title">2. สมดุลเป้าหมาย NDC</div>
+          <div class="sc-tab-sub">ปลูกเสริม 50% · ฟื้นเอง 50%</div>
+        </div>
+        <div class="scenario-tab-btn active" id="sc-tab-nature" onclick="selectScenario('nature')">
+          <div class="sc-tab-title">3. ธรรมชาติฟื้นตัวเข้มข้น</div>
+          <div class="sc-tab-sub">ปลูกเสริม 15% · ฟื้นเอง 85%</div>
+        </div>
+        <div class="scenario-tab-btn" id="sc-tab-custom" onclick="selectScenario('custom')">
+          <div class="sc-tab-title">4. จำลองตัวแปรเอง (Custom)</div>
+          <div class="sc-tab-sub">ปรับสไลเดอร์ตามใจชอบ</div>
+        </div>
+      </div>
+
+      <!-- Scenario Comparison Matrix Table -->
+      <div class="scenario-matrix-card">
+        <table class="sc-table">
+          <thead>
+            <tr>
+              <th>ยุทธศาสตร์</th>
+              <th>สัดส่วนฟื้นเอง</th>
+              <th>งบประมาณที่ใช้ (ต่อ 1M ไร่)</th>
+              <th>งบที่ประหยัดได้</th>
+              <th>ความหลากหลายชีวภาพ</th>
+              <th>ความเสี่ยงไฟป่า/ล้มเหลว</th>
+              <th>ความคุ้มค่าเชิงนโยบาย</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="row-sc-bau">
+              <td><strong>1. แบบเดิม (Status Quo)</strong></td>
+              <td>20%</td>
+              <td style="color:var(--rust);">32,800 ล้านบาท</td>
+              <td>เกณฑ์ฐาน (0%)</td>
+              <td>ต่ำ (monoculture เสี่ยง)</td>
+              <td>สูง (หากขาดงบดูแล 3 ปี)</td>
+              <td>ต่ำสุด (เสียงบประมาณสูง)</td>
+            </tr>
+            <tr id="row-sc-balanced">
+              <td><strong>2. สมดุล NDC Target</strong></td>
+              <td>50%</td>
+              <td style="color:var(--gold);">22,000 ล้านบาท</td>
+              <td style="color:#15803d;">ประหยัด 18,000 ล้านบาท (45%)</td>
+              <td>ปานกลาง-ดี</td>
+              <td>ปานกลาง</td>
+              <td>เหมาะกับแปลง ANR ปานกลาง</td>
+            </tr>
+            <tr id="row-sc-nature" class="active-sc-row">
+              <td><strong>3. ธรรมชาติเข้มข้น (Nature-Led)</strong></td>
+              <td>85%</td>
+              <td style="color:var(--forest);">9,400 ล้านบาท</td>
+              <td style="color:#15803d; font-weight:700;">ประหยัด 30,600 ล้านบาท (76.5%)</td>
+              <td>สูงสุด (นิเวศป่าแท้)</td>
+              <td>ต่ำ (ระบบรากแก้วทนแล้ง)</td>
+              <td>แนะนำสูงสุดสำหรับไทย ⭐</td>
+            </tr>
+            <tr id="row-sc-custom">
+              <td><strong>4. ปรับค่าเอง (Custom Simulator)</strong></td>
+              <td id="table-custom-nr">80%</td>
+              <td id="table-custom-cost">11,200 ล้านบาท</td>
+              <td id="table-custom-save" style="color:#15803d;">ประหยัด 28,800 ล้านบาท</td>
+              <td>ตามสัดส่วน</td>
+              <td>แปรผัน</td>
+              <td>โมเดลจำลองเฉพาะกิจ</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Restoration Simulator Container -->
+      <div class="simulator-container">
+        <!-- Input Sliders -->
+        <div class="sim-inputs">
+          <div class="sim-input-row">
+            <label>
+              <span>เป้าหมายพื้นที่โครงการ (Target Area)</span>
+              <span id="label-sim-area" style="color:var(--terracotta);">500,000 ไร่</span>
+            </label>
+            <input type="range" id="input-sim-area" min="50000" max="5000000" step="50000" value="500000" oninput="onSimulatorInputChanged()" />
+            <div class="help-hint">เลือกขนาดพื้นที่โครงการ (5 หมื่น ถึง 5 ล้านไร่)</div>
+          </div>
+
+          <div class="sim-input-row">
+            <label>
+              <span>สัดส่วนฟื้นฟูตามธรรมชาติ (Natural Regen %)</span>
+              <span id="label-sim-nr-ratio" style="color:var(--forest);">85%</span>
+            </label>
+            <input type="range" id="input-sim-nr-ratio" min="10" max="100" step="5" value="85" oninput="onSimulatorInputChanged()" />
+            <div class="help-hint">สัดส่วนพื้นที่ที่ปล่อยให้ฟื้นเอง (ส่วนที่เหลือใช้วิธีปลูกเสริม)</div>
+          </div>
+
+          <div class="sim-input-row">
+            <label>
+              <span>ราคาคาร์บอนเครดิตคาดการณ์ (Carbon Price)</span>
+              <span id="label-sim-c-price" style="color:var(--gold);">500 บาท / t CO₂e</span>
+            </label>
+            <input type="range" id="input-sim-c-price" min="200" max="2000" step="50" value="500" oninput="onSimulatorInputChanged()" />
+            <div class="help-hint">ราคาตลาดคาร์บอนเครดิตภาคป่าไม้ในอนาคต (Article 6 / T-VER)</div>
+          </div>
+        </div>
+
+        <!-- Output Dashboard -->
+        <div class="sim-results-panel">
+          <div class="res-block-head">ผลประโยชน์ที่คาดการณ์ในระยะเวลา 30 ปี</div>
+
+          <div class="res-metric-grid">
+            <div class="res-card">
+              <div class="rc-label">การกักเก็บคาร์บอนสะสม</div>
+              <div class="rc-value" id="calc-carbon-tco2">31.9 Mt</div>
+              <div class="rc-sub">ล้านตัน CO₂e (<span id="calc-carbon-c">~8.7 Mt C</span>)</div>
+            </div>
+
+            <div class="res-card">
+              <div class="rc-label">มูลค่าคาร์บอนเครดิต</div>
+              <div class="rc-value" id="calc-carbon-val">15,958 M฿</div>
+              <div class="rc-sub">ล้านบาท ตลอดอายุโครงการ</div>
+            </div>
+
+            <div class="res-card">
+              <div class="rc-label">ต้นทุนปลูกแบบเดิม 100%</div>
+              <div class="rc-value" id="calc-cost-active" style="color:var(--rust);">20,000 M฿</div>
+              <div class="rc-sub">เฉลี่ย 40,000 บาท/ไร่</div>
+            </div>
+
+            <div class="res-card">
+              <div class="rc-label">ต้นทุนตามแบบจำลองนี้</div>
+              <div class="rc-value" id="calc-cost-hybrid" style="color:var(--forest);">4,700 M฿</div>
+              <div class="rc-sub">ผสมผสาน NR + ปลูกเสริม</div>
+            </div>
+          </div>
+
+          <div class="savings-highlight">
+            <div>
+              <div class="sh-title">งบประมาณแผ่นดินที่ประหยัดได้ (Net Budget Savings)</div>
+              <div style="font-size:11.5px; color:#166534;">ลดต้นทุนเพาะกล้าไม้และเปลี่ยนงบเป็นกองทุนชุมชนพิทักษ์ป่า</div>
+            </div>
+            <div class="sh-val" id="calc-net-savings">ประหยัด 15,300 ล้านบาท (76.5%)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §08 4 POLICY USE CASES -->
+    <section class="content-section" id="policy">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-num">§ 08</span>
+          <h2 class="section-title">การประยุกต์ใช้กับงานสิ่งแวดล้อมและนโยบายป่าไม้ไทย</h2>
+        </div>
+        <span class="section-kicker">4 STRATEGIC POLICY USE CASES FOR THAILAND</span>
+      </div>
+
+      <div class="apps-cards-grid">
+        <!-- 1. Prioritization -->
+        <div class="app-card">
+          <div class="app-icon-wrap">🎯</div>
+          <h3 class="app-title">เลือกพื้นที่ฟื้นฟูคุ้มทุน</h3>
+          <div class="app-agency">กรมป่าไม้ & กรมอุทยานแห่งชาติฯ</div>
+          <p class="app-desc">
+            จัดลำดับแปลงป่าสงวนและเขตอุทยานฯ ที่สามารถปล่อยฟื้นตัวเองได้ เพื่อจัดสรรงบประมาณแผ่นดินไปยังพื้นที่ที่จำเป็นต้องปลูกจริง ลดการสูญเสียงบปลูกซ้ำซ้อนในพื้นที่ที่ฟื้นเองได้
+          </p>
+        </div>
+
+        <!-- 2. NDC & REDD+ -->
+        <div class="app-card">
+          <div class="app-icon-wrap">🌐</div>
+          <h3 class="app-title">รายงานเป้าหมาย NDC & REDD+</h3>
+          <div class="app-agency">สผ. & อบก. (TGO)</div>
+          <p class="app-desc">
+            ประเมินปริมาณการกักเก็บก๊าซเรือนกระจกในระดับชาติจากภาคป่าไม้ (LULUCF) ตามกรอบความตกลงปารีส และหนุนการซื้อขายคาร์บอนเครดิตตาม Article 6 อย่างโปร่งใสและมีข้อมูลอ้างอิง
+          </p>
+        </div>
+
+        <!-- 3. Wildlife Corridors -->
+        <div class="app-card">
+          <div class="app-icon-wrap">🐅</div>
+          <h3 class="app-title">ออกแบบ Corridor เชื่อมผืนป่า</h3>
+          <div class="app-agency">เป้าหมายโลก 30×30 (GBF)</div>
+          <p class="app-desc">
+            ชี้แนวเชื่อมต่อทางนิเวศระหว่างกลุ่มป่ามรดกโลก (เช่น ผืนป่าตะวันตก และดงพญาเย็น-เขาใหญ่) ผ่านหย่อมป่าที่มีศักยภาพฟื้นตัวสูง สร้างทางเดินสัตว์ป่าโดยไม่ต้องเวนคืนที่ดินแปลงใหญ่
+          </p>
+        </div>
+
+        <!-- 4. EIA & SEA -->
+        <div class="app-card">
+          <div class="app-icon-wrap">📋</div>
+          <h3 class="app-title">เกณฑ์ประเมิน EIA & SEA</h3>
+          <div class="app-agency">สำนักงานนโยบายและแผนฯ (สผ.)</div>
+          <p class="app-desc">
+            ใช้เป็นเกณฑ์วิทยาศาสตร์ในการประเมินผลกระทบสิ่งแวดล้อมของโครงการโครงสร้างพื้นฐาน หากโครงการตัดผ่านพื้นที่ที่มีศักยภาพ PNV สูง จะต้องกำหนดมูลค่าการชดเชยทางนิเวศที่เหมาะสม
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER & CANDIDATE PRESENTATION PROFILE -->
+    <footer class="footer-section">
+      <div class="footer-left">
+        <div class="f-eyebrow">นำเสนอในการสัมภาษณ์ · PRESENTED FOR INTERVIEW</div>
+        <div class="f-name">นายอภินันต์ เนียมสุทธิ (Aphinan Niamsuthi)</div>
+        <div class="f-role">รหัสผู้สมัคร: 011233 · ตำแหน่งนักวิชาการสิ่งแวดล้อม (Environmental Researcher Candidate)</div>
+        <div class="f-refs">
+          <strong>PRIMARY CITATION:</strong> Williams, B. A. et al. (2024). Global potential for natural regeneration in deforested tropical regions. <em>Nature 636</em>, 131–137. DOI: 10.1038/s41586-024-08106-4<br />
+          <strong>DATA SOURCES:</strong> ESA CCI Land Cover · MODIS MOD17A3 NPP · SRTM DEM · SoilGrids · WDPA Protected Areas · 02_thailand_pnv_final.tif (30-m Raster) · QGIS 3.x Spatial Analysis
+        </div>
+      </div>
+
+      <div class="qr-card-wrap">
+        <div class="qr-image-box">
+          <a id="qr-target-link" href="https://aphinanniam.github.io/pnv-thailand/" target="_blank" rel="noopener" title="คลิกเพื่อเปิดเว็บไซต์">
+            <div id="dynamic-qr-canvas">
+              <img src="website-qrcode.svg" alt="QR code เปิดเว็บไซต์ PNV Thailand" width="130" height="130" style="display:block; border-radius:4px;" />
+            </div>
+          </a>
+        </div>
+        <div class="qr-caption" id="qr-display-cap">สแกนหรือคลิกเพื่อเปิดเว็บไซต์</div>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px; width:100%;">
+          <a id="qr-chrome-btn" href="https://aphinanniam.github.io/pnv-thailand/" target="_blank" rel="noopener" class="qr-link-btn" style="background:#2563eb; color:#ffffff; font-weight:600; text-align:center;">
+            🌐 เปิดเว็บไซต์ ↗
+          </a>
+          <button type="button" onclick="toggleQrCustomizer()" class="qr-link-btn" style="background:transparent; border:1px solid var(--border-main); color:var(--ink-secondary); cursor:pointer; font-size:10px;">
+            ⚙️ เปลี่ยน URL ของ QR Code
+          </button>
+        </div>
+
+        <div id="qr-customizer-box" style="display:none; margin-top:8px; padding:10px; background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; width:100%; font-size:11px; text-align:left;">
+          <label style="display:block; font-weight:600; margin-bottom:4px; color:var(--ink-primary); font-size:10.5px;">URL ปลายทาง QR Code:</label>
+          <input type="text" id="qr-url-input" value="https://aphinanniam.github.io/pnv-thailand/" style="width:100%; padding:5px 8px; font-size:10px; font-family:'JetBrains Mono',monospace; border:1px solid var(--border-main); border-radius:4px; background:var(--bg-body); color:var(--ink-primary); margin-bottom:6px;" />
+          <div style="display:flex; gap:6px;">
+            <button type="button" onclick="updateIndexQR()" style="flex:1; padding:5px 6px; background:var(--forest); color:white; border:none; border-radius:4px; cursor:pointer; font-size:10px; font-weight:600;">สร้าง QR ใหม่</button>
+            <button type="button" onclick="openQrInChrome()" style="flex:1; padding:5px 6px; background:#2563eb; color:white; border:none; border-radius:4px; cursor:pointer; font-size:10px; font-weight:600;">เปิดเว็บไซต์</button>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MAP LIGHTBOX MODAL WITH SMOOTH DRAGGING -->
+  <div class="lightbox-modal" id="map-lightbox" onclick="closeMapLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <div class="lightbox-toolbar">
+        <span class="lightbox-title" id="lightbox-title">แผนที่ความละเอียดสูง</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="pres-btn" onclick="zoomLightbox(0.3)">➕ ซูมเข้า</button>
+          <button class="pres-btn" onclick="zoomLightbox(-0.3)">➖ ซูมออก</button>
+          <button class="pres-btn" onclick="resetLightboxZoom()">↺ รีเซ็ต</button>
+          <button class="pres-btn" onclick="closeMapLightbox()" style="background:var(--terracotta);">✕ ปิด (ESC)</button>
+        </div>
+      </div>
+      <div class="lightbox-img-wrapper" id="lightbox-img-wrapper">
+        <img id="lightbox-img" src="" alt="Enlarged Map View" />
+      </div>
+    </div>
+  </div>
+
+  <!-- PRESENTATION FULLSCREEN MODAL (8 EXPANDED SLIDES) -->
+  <div class="presentation-modal" id="pres-modal">
+    <div class="pres-top-bar">
+      <span class="badge-nature">โหมดนำเสนอสำหรับการสัมภาษณ์ (INTERVIEW PRESENTATION MODE)</span>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span class="pres-slide-num" id="pres-slide-num">สไลด์ 1 / 8</span>
+        <button class="pres-btn" onclick="closePresentation()" style="background:var(--terracotta);">ปิดโหมดนำเสนอ (ESC)</button>
+      </div>
+    </div>
+
+    <div class="pres-slide-card" id="pres-slide-card">
+      <!-- Injected by JavaScript -->
+    </div>
+
+    <div class="pres-controls">
+      <button class="pres-btn" onclick="prevSlide()">◀ สไลด์ก่อนหน้า (Left Arrow)</button>
+      <button class="pres-btn" onclick="nextSlide()">สไลด์ถัดไป (Right Arrow / Space) ▶</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* ==========================================================================
+       APP STATE & DUAL-THEME LOGIC
+       ========================================================================== */
+    const state = {
+      unit: 'mha', // 'mha', 'rai', 'km2'
+      theme: 'paper',
+      currentSlide: 0,
+      zoomCase: 'c',
+      region: 'all',
+      scenario: 'nature',
+      forestCategory: 'all'
+    };
+
+    // Conversion multipliers from Mha base
+    const UNIT_FACTORS = {
+      mha: { factor: 1, label: 'Mha', name: 'ล้านเฮกตาร์' },
+      rai: { factor: 6.25, label: 'ล้านไร่', name: 'ล้านไร่' },
+      km2: { factor: 10000, label: 'km²', name: 'ตารางกิโลเมตร' }
+    };
+
+    function formatArea(mhaValue, decimals = 2) {
+      const u = UNIT_FACTORS[state.unit];
+      const converted = mhaValue * u.factor;
+      if (state.unit === 'km2') {
+        return Math.round(converted).toLocaleString('th-TH') + ' ' + u.label;
+      }
+      return converted.toFixed(decimals) + ' ' + u.label;
+    }
+
+    function setUnit(unit) {
+      state.unit = unit;
+      document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`unit-${unit}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const u = UNIT_FACTORS[unit];
+
+      // Update Global stat in counter bar
+      const globalEl = document.getElementById('stat-global-val');
+      const globalUnitEl = document.getElementById('stat-global-unit');
+      if (globalEl && globalUnitEl) {
+        const val = 215 * u.factor;
+        globalEl.innerText = unit === 'km2' ? (val).toLocaleString('th-TH') : (unit === 'rai' ? val.toFixed(1) : val.toFixed(0));
+        globalUnitEl.innerText = u.label;
+      }
+
+      // Update Hero section lede text
+      const heroGlobalEl = document.getElementById('hero-global-area');
+      if (heroGlobalEl) {
+        const val = 215 * u.factor;
+        heroGlobalEl.innerText = `${unit === 'km2' ? val.toLocaleString('th-TH') : val.toFixed(unit === 'rai' ? 1 : 0)} ${u.name}`;
+      }
+
+      // Update Realm bars
+      document.querySelectorAll('.realm-val').forEach(el => {
+        const base = parseFloat(el.getAttribute('data-val'));
+        if (!isNaN(base)) {
+          const val = base * u.factor;
+          el.innerText = unit === 'km2' ? Math.round(val).toLocaleString('th-TH') : (val >= 10 ? val.toFixed(1) : val.toFixed(2));
+        }
+      });
+
+      // Update Thai Tier breakdown
+      document.querySelectorAll('.tier-val').forEach(el => {
+        const base = parseFloat(el.getAttribute('data-mha'));
+        if (!isNaN(base)) {
+          el.innerText = formatArea(base);
+        }
+      });
+
+      // Re-trigger region update for unit refresh
+      selectThaiRegion(state.region);
+      updateSimulatorOutputs();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'paper';
+      const next = current === 'paper' ? 'dark' : 'paper';
+      document.documentElement.setAttribute('data-theme', next);
+      state.theme = next;
+      localStorage.setItem('pnv_theme', next);
+    }
+
+    const savedTheme = localStorage.getItem('pnv_theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      state.theme = savedTheme;
+    }
+
+    /* Mobile Drawer */
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobile-drawer');
+      if (drawer) drawer.classList.toggle('active');
+    }
+
+    /* Reading Progress Bar */
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      const bar = document.getElementById('reading-progress');
+      if (bar) bar.style.width = scrolled + '%';
+    });
+
+    /* ==========================================================================
+       PANTROPICAL ZOOM BOX EXPLORER (FIG 1 a-f)
+       ========================================================================== */
+    const ZOOM_DATA = {
+      a: { title: "Box a · Mesoamerica & Mexico", desc: "พื้นที่ทุ่งหญ้าเลี้ยงสัตว์ทิ้งร้างในเม็กซิโกตอนใต้และอเมริกากลางที่มีศักยภาพฟื้นตัวสูงหากลดแรงกดดันจากปศุสัตว์" },
+      b: { title: "Box b · Chocó-Darién & Colombian Andes", desc: "แนวเชื่อมต่อผืนป่าฝนเขตร้อนที่มีความชื้นและความหลากหลายทางชีวภาพระดับโลก การฟื้นตัวเกิดได้เร็วมากเนื่องจาก Seed Rain สมบูรณ์" },
+      c: { title: "Box c · Southeast Asia (เอเชียตะวันออกเฉียงใต้ & ประเทศไทย)", desc: "พื้นที่ป่าดิบชื้นและป่าผลัดใบเขตร้อนที่มีความลาดชันสูงและอยู่ติดกับแนวเทือกเขาผืนป่าดั้งเดิม มีโอกาสฟื้นตัวตามธรรมชาติสูงมาก แต่เผชิญแรงกดดันจากการขยายตัวของพืชไร่เชิงเดี่ยว" },
+      d: { title: "Box d · Brazilian Atlantic Forest (Mata Atlântica)", desc: "ป่าชายฝั่งแอตแลนติกของบราซิลที่ถูกตัดถางในอดีต แต่มีหย่อมป่าดั้งเดิมกระจายอยู่ สามารถใช้ธรรมชาติฟื้นตัวเชื่อมร้อยผืนป่าได้คุ้มค่าที่สุด" },
+      e: { title: "Box e · Congo Basin & Central Africa", desc: "อ่างลุ่มน้ำคองโกในแอฟริกากลางที่มีป่าดิบชื้นกว้างใหญ่ ดินมีความชื้นสูงมาก เอื้อต่อการงอกของเมล็ดพันธุ์ตามธรรมชาติอย่างรวดเร็ว" },
+      f: { title: "Box f · Madagascar & Coastal East Africa", desc: "พื้นที่เกาะมาดากัสการ์และป่าชายฝั่งแอฟริกาตะวันออก มีความหลากหลายของพืชพรรณเฉพาะถิ่นสูงยิ่ง แต่เผชิญภัยคุกคามจากไฟป่าและการตัดไม้" }
+    };
+
+    function showZoomCase(key) {
+      state.zoomCase = key;
+      document.querySelectorAll('.zoom-btn').forEach(b => {
+        const onclickAttr = b.getAttribute('onclick') || '';
+        b.classList.toggle('active', onclickAttr.includes("'" + key + "'"));
+      });
+
+      const card = document.getElementById('zoom-info-card');
+      if (card && ZOOM_DATA[key]) {
+        card.style.display = 'block';
+        card.innerHTML = `<strong>${ZOOM_DATA[key].title}:</strong> ${ZOOM_DATA[key].desc}`;
+      }
+    }
+
+    /* ==========================================================================
+       THAILAND REGIONAL INTELLIGENCE & GEO-HOTSPOTS
+       ========================================================================== */
+    const THAI_REGIONS = {
+      all: {
+        title: "ภาพรวมประเทศไทย (National Summary)",
+        score: "คะแนนเฉลี่ย: 37 / 100",
+        desc: "ประเทศไทยมีพื้นที่ที่ถูกตัดถางและมีศักยภาพฟื้นฟูตามธรรมชาติวิเคราะห์รวม 44.76 ล้านเฮกตาร์ (~87% ของพื้นที่ประเทศ) โดยพื้นที่ส่วนใหญ่ (48.1%) อยู่ในระดับปานกลาง ซึ่งสามารถเร่งกระบวนการฟื้นตัวได้ด้วยการช่วยฟื้นฟูธรรมชาติ (Assisted Natural Regeneration - ANR)",
+        areaMha: 44.76,
+        highMha: 3.94,
+        carbon: "~4,870 Mt C (~17.8 Gt CO₂e)"
+      },
+      north: {
+        title: "ภาคเหนือ (Northern Highlands & Watersheds)",
+        score: "คะแนนเฉลี่ย: 46 / 100",
+        desc: "ภูมิประเทศเป็นภูเขาสูงชัน (High Slope) ติดกับผืนป่าอนุรักษ์เดิม มีศักยภาพฟื้นตัวดีมากในพื้นที่ไร่หมุนเวียนเก่า อุปสรรคสำคัญคือไฟป่าและหมอกควันในฤดูแล้ง การจัดการควรเน้นการทำแนวกันไฟและการลาดตระเวนร่วมกับชุมชน",
+        areaMha: 14.20,
+        highMha: 1.85,
+        carbon: "~1,550 Mt C"
+      },
+      northeast: {
+        title: "ภาคตะวันออกเฉียงเหนือ (Isan / Khorat Plateau)",
+        score: "คะแนนเฉลี่ย: 28 / 100",
+        desc: "พื้นที่ส่วนใหญ่ถูกเปลี่ยนเป็นไร่อ้อย มันสำปะหลัง และนาข้าวอย่างหนาแน่น ดินปนทรายและแห้งแล้ง ศักยภาพฟื้นตัวตามธรรมชาติอยู่ในระดับต่ำ ยกเว้นบริเวณแนวเทือกเขาดงพญาเย็น-เขาใหญ่ และภูพาน ที่ยังมีหย่อมป่าสมบูรณ์",
+        areaMha: 15.80,
+        highMha: 0.38,
+        carbon: "~1,120 Mt C"
+      },
+      central: {
+        title: "ภาคกลาง (Chao Phraya Lowland Basin)",
+        score: "คะแนนเฉลี่ย: 18 / 100",
+        desc: "พื้นที่ราบลุ่มเกษตรกรรมชลประทานเข้มข้น มีความเป็นเมืองสูง (Low Distance to Urban) และแทบไม่มีหย่อมป่าเดิมหลงเหลือ ศักยภาพฟื้นตัวต่ำมาก หากต้องการฟื้นฟูต้องใช้วิธีปลูกป่าเชิงรุก (Active Tree Planting) และการปรับปรุงดิน",
+        areaMha: 8.10,
+        highMha: 0.12,
+        carbon: "~340 Mt C"
+      },
+      south: {
+        title: "ภาคใต้ (Southern Tropical Rainforest Peninsula)",
+        score: "คะแนนเฉลี่ย: 58 / 100",
+        desc: "ปริมาณน้ำฝนสูงตลอดปี ผลผลิตชีวมวล (NPP) สูงที่สุดในประเทศ ป่าเดิมเป็นป่าดิบชื้น (Tropical Rainforest) จึงมีศักยภาพฟื้นตัวเองตามธรรมชาติสูงที่สุด โดยเฉพาะพื้นที่สวนยางพาราหรือปาล์มน้ำมันเก่าที่ทิ้งร้างและอยู่ใกล้เทือกเขานครศรีธรรมราช/เทือกเขาบรรทัด",
+        areaMha: 4.90,
+        highMha: 1.24,
+        carbon: "~1,380 Mt C"
+      },
+      west: {
+        title: "ภาคตะวันตก (Western Forest Complex Corridor)",
+        score: "คะแนนเฉลี่ย: 62 / 100",
+        desc: "ผืนป่าตะวันตก (ห้วยขาแข้ง-ทุ่งใหญ่นเรศวร) เป็นผืนป่าที่ใหญ่และสมบูรณ์ที่สุดของเอเชียแผ่นดินใหญ่ พื้นที่รอยต่อมีเมล็ดพันธุ์และสัตว์ป่าช่วยกระจายพันธุ์สูงมาก เหมาะอย่างยิ่งต่อการกำหนดเป็นแนวระเบียงเชื่อมต่อทางนิเวศ (Wildlife Corridors)",
+        areaMha: 1.76,
+        highMha: 0.35,
+        carbon: "~480 Mt C"
+      }
+    };
+
+    const HOTSPOTS_DATA = {
+      wefcom: {
+        name: "ผืนป่าตะวันตก (Western Forest Complex - ห้วยขาแข้ง)",
+        score: 62,
+        region: 'west',
+        desc: "ผืนป่ามรดกโลกที่มีความสมบูรณ์สูงที่สุดในแผ่นดินใหญ่เอเชียตะวันออกเฉียงใต้ มีประชากรเสือโคร่งและช้างป่าอาศัยอยู่หนาแน่น แนวขอบป่ามีศักยภาพฟื้นตัวตามธรรมชาติสูงมาก เหมาะกำหนดเป็น Wildlife Corridor",
+        trees: "สัก, ประดู่, แดง, มะค่าโมง",
+        action: "Passive Regeneration 80% ร่วมกับการลาดตระเวนเชิงคุณภาพ (SMART Patrol)"
+      },
+      khaoyai: {
+        name: "ดงพญาเย็น-เขาใหญ่ (Dong Phayayen-Khao Yai)",
+        score: 54,
+        region: 'northeast',
+        desc: "แนวเชื่อมต่อระหว่างอุทยานแห่งชาติเขาใหญ่และทับลาน ป่าดิบแล้งและป่าเบญจพรรณ ต้องการการฟื้นฟูเชื่อมร้อยหย่อมป่าที่ถูกถนนและรีสอร์ตตัดขาด",
+        trees: "ยางนา, กระบาก, พะยอม, ตะเคียนหิน",
+        action: "Assisted Natural Regeneration (ANR) 70% + ปลูกเสริมไม้ผลสำหรับสัตว์ป่า"
+      },
+      inthanon: {
+        name: "ดอยอินทนนท์ / สันเขาภาคเหนือ (Northern Highlands)",
+        score: 48,
+        region: 'north',
+        desc: "ป่าต้นน้ำชั้น 1A ระดับความสูงมากกว่า 1,000 เมตร ฟื้นตัวได้ดีในไร่หมุนเวียนเก่า แต่อ่อนไหวสูงต่อไฟป่าและหมอกควันข้ามพรมแดน",
+        trees: "ก่อสน, ก่อเดือย, มณฑาดอย, กำลังเสือโคร่ง",
+        action: "สร้างแนวกันไฟเปียก (Wet Firebreak) ร่วมกับชุมชนท้องถิ่นและชาวไทยภูเขา"
+      },
+      halabala: {
+        name: "ฮาลา-บาลา / เทือกเขาบรรทัด (Southern Rain Forest)",
+        score: 78,
+        region: 'south',
+        desc: "ป่าดิบชื้นผืนใหญ่ชายแดนภาคใต้ มีความหลากหลายของนกเงือกและพืชพันธุ์สูงที่สุดในไทย ความชื้นและฝนตกชุกทำให้เมล็ดไม้งอกได้เร็วมาก",
+        trees: "ตะเคียนทอง, สยาขาว, ยางเสียน, หลุมพอ",
+        action: "Passive Regeneration 95% — ห้ามการรบกวนหน้าดิน ปล่อยให้ธรรมชาติฟื้นเอง 100%"
+      },
+      pranburi: {
+        name: "ปากน้ำปราณ / สามร้อยยอด (Mangrove Wetland)",
+        score: 76,
+        region: 'west',
+        desc: "ระบบนิเวศป่าชายเลนและป่าชุ่มน้ำชายฝั่งอ่าวไทย มีศักยภาพในการกักเก็บคาร์บอนในชั้นดินเลน (Blue Carbon) สูงกว่าป่าบก 4 เท่า",
+        trees: "โกงกางใบใหญ่, แสมขาว, ลำพู, ตะบูนดำ",
+        action: "รื้อคันดินนากุ้งเก่า ฟื้นฟูระบบน้ำขึ้นลงตามธรรมชาติ (Hydrological Flow)"
+      },
+      phuphan: {
+        name: "เทือกเขาภูพาน / ที่ราบสูงอีสาน (Phu Phan Plateau)",
+        score: 32,
+        region: 'northeast',
+        desc: "พื้นที่ป่าเต็งรังและป่าเบญจพรรณบนดินลูกรังและดินทราย เผชิญแรงกดดันจากการทำไร่มันสำปะหลังและไฟป่าซ้ำซาก",
+        trees: "เต็ง, รัง, พลวง, กราด, มะเกลือป่า",
+        action: "ปรับปรุงโครงสร้างดิน หว่านปุ๋ยพืชสด และปลูกไม้พี่เลี้ยงทนแล้งนำร่อง"
+      }
+    };
+
+    function selectThaiRegion(key) {
+      state.region = key;
+      document.querySelectorAll('.region-pill').forEach(p => {
+        const onclickAttr = p.getAttribute('onclick') || '';
+        p.classList.toggle('active', onclickAttr.includes("'" + key + "'"));
+      });
+
+      const data = THAI_REGIONS[key] || THAI_REGIONS.all;
+      const titleEl = document.getElementById('reg-title');
+      const scoreEl = document.getElementById('reg-score');
+      const descEl = document.getElementById('reg-desc');
+      const areaEl = document.getElementById('reg-area');
+      const highEl = document.getElementById('reg-high');
+      const carbonEl = document.getElementById('reg-carbon');
+
+      if (titleEl) titleEl.innerText = data.title;
+      if (scoreEl) scoreEl.innerText = data.score;
+      if (descEl) descEl.innerText = data.desc;
+      if (areaEl) areaEl.innerText = formatArea(data.areaMha);
+      if (highEl) highEl.innerText = formatArea(data.highMha);
+      if (carbonEl) carbonEl.innerText = data.carbon;
+    }
+
+    function selectHotspot(key) {
+      const h = HOTSPOTS_DATA[key];
+      if (!h) return;
+
+      document.querySelectorAll('.hotspot-tag').forEach(t => {
+        const onclickAttr = t.getAttribute('onclick') || '';
+        t.classList.toggle('active', onclickAttr.includes("'" + key + "'"));
+      });
+
+      selectThaiRegion(h.region);
+
+      const titleEl = document.getElementById('reg-title');
+      const scoreEl = document.getElementById('reg-score');
+      const descEl = document.getElementById('reg-desc');
+
+      if (titleEl) titleEl.innerText = `📍 ${h.name}`;
+      if (scoreEl) scoreEl.innerText = `คะแนน PNV: ${h.score} / 100`;
+      if (descEl) {
+        descEl.innerHTML = `<strong>บริบทพื้นที่:</strong> ${h.desc}<br /><br /><strong>พันธุ์ไม้เด่น:</strong> ${h.trees}<br /><strong>แนวทางเชิงนโยบาย:</strong> ${h.action}`;
+      }
+    }
+
+    /* Standalone Histogram Click Interaction */
+    function filterByBin(binRange, pct) {
+      const infoEl = document.getElementById('hist-selected-info');
+      const totalAnalyzedMha = 44.76;
+      const binMha = (totalAnalyzedMha * (pct / 100));
+
+      if (infoEl) {
+        infoEl.innerHTML = `
+          <strong>ช่วงคะแนน PNV ${binRange}:</strong> คิดเป็น <strong>${pct}%</strong> ของพื้นที่ไทย (${formatArea(binMha)}) · 
+          ${pct > 15 ? 'สัดส่วนพื้นที่ขนาดใหญ่ — ควรกำหนดมาตรการตามระดับความพร้อมของระบบนิเวศ' : 'พื้นที่เฉพาะเจาะจง — ต้องการนโยบายบริหารจัดการเชิงพื้นที่แบบแม่นยำ'}
+        `;
+      }
+    }
+
+    /* ==========================================================================
+       §04 FILTERABLE FOREST TYPES DATA & MODAL
+       ========================================================================== */
+    const FOREST_DETAILS = {
+      rainforest: {
+        nameTh: "ป่าดิบชื้น (Tropical Rain Forest)",
+        icon: "🌴",
+        score: "82 / 100 (ศักยภาพสูงมาก)",
+        carbon: "~140–160 Mg C/ha (30 ปีสะสม ~513–587 t CO₂e)",
+        trees: "ตะเคียนทอง, ยางนา, ตะเคียนชันตาแมว, สยา, หลุมพอ, กาลอ",
+        locations: "ภาคใต้ตอนล่าง (นราธิวาส, ยะลา, พัทลุง, ตรัง) และภาคตะวันออก (เกาะช้าง, เขาสอยดาว)",
+        climate: "ฝนตกชุกเกือบตลอดปี (>2,500 มม./ปี) ความชื้นสัมพัทธ์สูง แสงแดดส่องถึงเรือนยอดชั้นบน",
+        strategy: "Passive Regeneration 90% — เมล็ดพันธุ์ในดินและสัตว์ป่าช่วยกระจายพันธุ์มีความพร้อมสูงที่สุด ไม่จำเป็นต้องจัดสรรงบประมาณปลูก เพียงป้องกันการบุกรุกและทำแนวกันไฟ",
+        threats: "การขยายตัวของสวนยางพารา ปาล์มน้ำมัน และการลักลอบตัดไม้มีค่า"
+      },
+      dry_evergreen: {
+        nameTh: "ป่าดิบแล้ง (Dry Evergreen Forest)",
+        icon: "🌳",
+        score: "68 / 100 (ศักยภาพสูง)",
+        carbon: "~110–130 Mg C/ha (30 ปีสะสม ~403–477 t CO₂e)",
+        trees: "กระบาก, ยางแดง, พะยอม, ตะเคียนหิน, ยมหิน, ตีนเป็ดแดง",
+        locations: "ผืนป่าดงพญาเย็น-เขาใหญ่, เขตรักษาพันธุ์สัตว์ป่าภูเขียว, แก่งกระจาน",
+        climate: "ปริมาณฝน 1,200–2,000 มม./ปี มีฤดูแล้งสั้น 3–4 เดือน ดินมีความอุดมสมบูรณ์ปานกลางถึงสูง",
+        strategy: "Assisted Natural Regeneration (ANR) 70% + ปลูกเสริมไม้โตช้า 30% เน้นการกำจัดวัชพืชเบิกนำและเถาวัลย์รอบตอไม้เดิม",
+        threats: "ไฟป่าลุกลามจากพื้นที่เกษตรกรรม และการพัฒนาโครงสร้างพื้นฐานตัดผ่านผืนป่า"
+      },
+      hill_evergreen: {
+        nameTh: "ป่าดิบเขา (Hill Evergreen Forest)",
+        icon: "🏔️",
+        score: "64 / 100 (ศักยภาพสูง-ปานกลาง)",
+        carbon: "~105–125 Mg C/ha (30 ปีสะสม ~385–458 t CO₂e)",
+        trees: "ก่อสน, ก่อเดือย, มณฑาดอย, กำลังเสือโคร่ง, สารภีดอย, จำปีดอย",
+        locations: "ยอดเขาสูงภาคเหนือ (>1,000 ม. จากระดับน้ำทะเล) เช่น ดอยอินทนนท์, ภูหลวง, ดอยผ้าห่มปก",
+        climate: "อากาศหนาวเย็นตลอดปี เมฆหมอกปกคลุม แสงแดดน้อยในฤดูหนาว ดินมีความชื้นสะสมสูง",
+        strategy: "การจัดการไฟป่าร่วมกับชุมชนบนพื้นที่สูง ป้องกันหมอกควัน และปล่อยให้ไม้เบิกนำตระกูลก่อฟื้นตัว",
+        threats: "การแผ้วถางทำไร่กะหล่ำและข้าวโพดบนพื้นที่ลาดชัน และปัญหาไฟป่ารุนแรงในฤดูแล้ง"
+      },
+      mixed_deciduous: {
+        nameTh: "ป่าเบญจพรรณ (Mixed Deciduous Forest)",
+        icon: "🍂",
+        score: "52 / 100 (ศักยภาพปานกลาง)",
+        carbon: "~85–105 Mg C/ha (30 ปีสะสม ~312–385 t CO₂e)",
+        trees: "สัก, ประดู่, แดง, มะค่าโมง, ชิงชัน, ไผ่ป่า, ไผ่รวก",
+        locations: "ผืนป่าตะวันตก (ห้วยขาแข้ง-ทุ่งใหญ่นเรศวร), ลำปาง, น่าน, กาญจนบุรี",
+        climate: "มีฤดูแล้งยาวนาน 4–6 เดือน ใบไม้จะผลัดใบเกือบหมดเพื่อลดการคายน้ำในฤดูหนาว-ร้อน",
+        strategy: "ใช้ประโยชน์จากการแตกหน่อของตอไม้เดิม (Coppicing) และควบคุมไฟป่าช่วงต้นฤดูแล้งเพื่อป้องกันการไหม้ลูกไม้",
+        threats: "การเผาป่าเพื่อหาของป่าและการล่าสัตว์ ซึ่งทำลายกล้าไม้ที่เพิ่งงอกใหม่"
+      },
+      dry_dipterocarp: {
+        nameTh: "ป่าเต็งรัง (Dry Dipterocarp Forest)",
+        icon: "🪵",
+        score: "38 / 100 (ศักยภาพปานกลาง-ต่ำ)",
+        carbon: "~55–75 Mg C/ha (30 ปีสะสม ~202–275 t CO₂e)",
+        trees: "เต็ง, รัง, พลวง, กราด, มะเกลือป่า, พะยอม, ติ้วขน",
+        locations: "ที่ราบสูงโคราช (ภาคอีสาน), ภาคเหนือตอนบนบริเวณที่ดอนดินลูกรัง",
+        climate: "ปริมาณฝนต่ำ (<1,200 มม./ปี) ฤดูแล้งยาวนาน ดินปนทรายหรือลูกรังตื้นและขาดธาตุอาหาร",
+        strategy: "จำเป็นต้องใช้การฟื้นฟูเชิงรุก (Enrichment Planting) ร่วมกับการป้องกันไฟป่าซ้ำซากและปรับปรุงหน้าดินด้วยปุ๋ยชีวภาพ",
+        threats: "ไฟป่าผิวดินเกิดขึ้นเป็นประจำทุกปี และการบุกรุกเปลี่ยนเป็นไร่อ้อยและมันสำปะหลัง"
+      },
+      mangrove: {
+        nameTh: "ป่าชายเลน (Mangrove Ecosystem - Blue Carbon)",
+        icon: "🦀",
+        score: "76 / 100 (ศักยภาพสูงมาก)",
+        carbon: "~180–220 Mg C/ha (รวมการกักเก็บคาร์บอนในชั้นดินเลนลึก สะสม ~660–807 t CO₂e)",
+        trees: "โกงกางใบใหญ่, โกงกางใบเล็ก, แสมขาว, แสมดำ, ลำพู, ตะบูนดำ",
+        locations: "ชายฝั่งอ่าวไทยและอันดามัน (พังงา, กระบี่, สุราษฎร์ธานี, ตรัง, ตราด)",
+        climate: "น้ำขึ้น-น้ำลงสม่ำเสมอ ดินเลนมีสภาวะขาดออกซิเจน ยับยั้งการย่อยสลายของอินทรียวัตถุ",
+        strategy: "ฟื้นฟูระบบอุทกวิทยา (Hydrological Flow Restoration) รื้อแนวคันนากุ้งร้างเพื่อให้น้ำทะเลขึ้นลงได้ตามธรรมชาติ เมล็ดพันธุ์จะลอยมาติดและฟื้นตัวได้เอง",
+        threats: "การเพาะเลี้ยงสัตว์น้ำเชิงพาณิชย์ และการกัดเซาะชายฝั่งจากคลื่นลมรุนแรง"
+      },
+      peat_swamp: {
+        nameTh: "ป่าพรุ (Peat Swamp Forest)",
+        icon: "💧",
+        score: "58 / 100 (ศักยภาพปานกลาง - อ่อนไหวสูง)",
+        carbon: "~150–190 Mg C/ha (ชั้นดินพีตกักเก็บคาร์บอนสะสมมหาศาล)",
+        trees: "หวายน้ำ, มะฮัง, ยวนแหล, เสม็ดขาว, บากู, หมากแดง",
+        locations: "ภาคใต้ตอนล่าง (พรุโต๊ะแดง จ.นราธิวาส, พรุควนเคร็ง จ.นครศรีธรรมราช)",
+        climate: "น้ำท่วมขังตลอดปี น้ำเป็นกรดอ่อน อินทรียวัตถุสะสมหนาเป็นชั้นพีตหลายเมตร",
+        strategy: "การรักษาระดับน้ำใต้ดินให้ท่วมขังอย่างต่อเนื่อง ปิดกั้นคลองระบายน้ำ เพื่อป้องกันไฟไหม้ชั้นพีตซึ่งปลดปล่อยก๊าซเรือนกระจกมหาศาล",
+        threats: "การขุดคลองระบายน้ำเพื่อทำสวนปาล์ม และไฟไหม้ป่าพรุในฤดูแล้ง"
+      },
+      pine_forest: {
+        nameTh: "ป่าสนเขา (Pine Forest)",
+        icon: "🌲",
+        score: "45 / 100 (ศักยภาพปานกลาง)",
+        carbon: "~70–90 Mg C/ha (30 ปีสะสม ~257–330 t CO₂e)",
+        trees: "สนสองใบ, สนสามใบ, ก่อแพะ, สารภีดอย, จำปาป่า",
+        locations: "สันเขาสูงภาคเหนือและอีสานตอนบน เช่น ภูกระดึง, ภูเรือ, ภูสอยดาว",
+        climate: "ความสูง 700–1,400 ม. ดินมีความเป็นกรดและระบายน้ำดี ลมพัดแรงสม่ำเสมอ",
+        strategy: "ควบคุมไฟป่าไม่ให้ลุกลามไหม้เรือนยอด และกำจัดพืชต่างถิ่นรุกรานที่แย่งพื้นที่งอกของกล้าสน",
+        threats: "การท่องเที่ยวหนาแน่น และไฟป่ารุนแรงในลานสน"
+      }
+    };
+
+    function filterForestCategory(cat) {
+      state.forestCategory = cat;
+      document.querySelectorAll('.forest-filter-btn').forEach(b => {
+        const onclickAttr = b.getAttribute('onclick') || '';
+        b.classList.toggle('active', onclickAttr.includes("'" + cat + "'"));
+      });
+
+      document.querySelectorAll('.forest-card').forEach(card => {
+        const cardCat = card.getAttribute('data-cat');
+        if (cat === 'all' || cardCat === cat) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function searchForestTypes(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.forest-card').forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    function openForestModal(key) {
+      const f = FOREST_DETAILS[key];
+      if (!f) return;
+
+      const modal = document.getElementById('forest-modal');
+      const content = document.getElementById('forest-modal-content');
+      if (modal && content) {
+        content.innerHTML = `
+          <button class="forest-modal-close" onclick="closeForestModal()">✕</button>
+          <div style="font-size:32px; margin-bottom:8px;">${f.icon}</div>
+          <h2 style="font-family:'Trirong', serif; font-size:24px; color:var(--forest-deepest); margin-bottom:4px;">${f.nameTh}</h2>
+          <div style="font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--terracotta); margin-bottom:18px;">
+            ศักยภาพ: ${f.score} · อัตราคาร์บอน: ${f.carbon}
+          </div>
+          <div style="font-size:13.5px; line-height:1.7; color:var(--ink-secondary); display:flex; flex-direction:column; gap:12px;">
+            <p><strong>ภูมิอากาศ & สภาพแวดล้อม:</strong> ${f.climate}</p>
+            <p><strong>การกระจายตัวในไทย:</strong> ${f.locations}</p>
+            <p><strong>ชนิดไม้เด่น & ไม้เบิกนำ:</strong> ${f.trees}</p>
+            <div style="background:rgba(61,104,73,0.1); padding:14px; border-radius:6px; border-left:3px solid var(--forest);">
+              <strong>กลยุทธ์ฟื้นฟูแนะนำ:</strong> ${f.strategy}
+            </div>
+            <p style="color:var(--rust);"><strong>ภัยคุกคามหลัก:</strong> ${f.threats}</p>
+          </div>
+        `;
+        modal.classList.add('active');
+      }
+    }
+
+    function closeForestModal() {
+      const modal = document.getElementById('forest-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    /* ==========================================================================
+       §05 PREDICTOR SIMULATOR FORMULA
+       ========================================================================== */
+    function updatePredictorSim() {
+      const distProt = parseInt(document.getElementById('sim-dist-prot').value);
+      const cropland = parseInt(document.getElementById('sim-cropland').value);
+      const slope = parseInt(document.getElementById('sim-slope').value);
+      const npp = parseInt(document.getElementById('sim-npp').value);
+
+      document.getElementById('val-dist-prot').innerText = distProt > 60 ? `ใกล้ป่าอนุรักษ์ (${distProt}%)` : `ห่างไกล (${distProt}%)`;
+      document.getElementById('val-cropland').innerText = cropland > 50 ? `เกษตรหนาแน่น (${cropland}%)` : `เกษตรบางเบา (${cropland}%)`;
+      document.getElementById('val-slope').innerText = slope > 50 ? `ภูเขาลาดชัน (${slope}%)` : `พื้นที่ราบ (${slope}%)`;
+      document.getElementById('val-npp').innerText = npp > 50 ? `ชีวมวลสูง (${npp}%)` : `ชีวมวลต่ำ (${npp}%)`;
+
+      // Williams et al. 2024 Random Forest regression proxy formula
+      let score = 25 + (distProt * 0.35) - (cropland * 0.38) + (slope * 0.22) + (npp * 0.20);
+      score = Math.max(5, Math.min(98, Math.round(score)));
+
+      const scoreEl = document.getElementById('sim-pnv-score');
+      const recEl = document.getElementById('sim-pnv-rec');
+
+      if (scoreEl) scoreEl.innerText = `${score} / 100`;
+
+      if (recEl) {
+        if (score >= 66) {
+          recEl.innerHTML = `<strong>ศักยภาพสูงมาก (High Potential):</strong> ระบบนิเวศมีแรงขับเคลื่อนตัวเองสูงมาก — แนะนำให้ใช้มาตรการ <em>Passive Natural Regeneration</em> โดยทำแนวกันไฟและหยุดการรบกวนของมนุษย์ ต้นไม้จะฟื้นตัวเองได้เร็วกว่าการปลูก`;
+        } else if (score >= 35) {
+          recEl.innerHTML = `<strong>ศักยภาพปานกลาง (Medium Potential):</strong> สภาวะเอื้ออำนวยบางส่วน — แนะนำให้ใช้เทคนิค <em>Assisted Natural Regeneration (ANR)</em> เช่น การตัดสางวัชพืชรอบตอไม้เดิม การเพาะไม้เบิกนำ (Pioneer trees) เฉพาะจุด และป้องกันไฟป่า`;
+        } else {
+          recEl.innerHTML = `<strong>ศักยภาพต่ำ (Low Potential):</strong> เมล็ดเข้าไม่ถึงหรือดินเสื่อมโทรมมาก — ไม่เหมาะแก่การปล่อยฟื้นเอง จำเป็นต้องใช้วิธี <em>Active Tree Planting</em> ปรับปรุงหน้าดินและปลูกต้นไม้พี่เลี้ยงนำร่อง`;
+        }
+      }
+    }
+
+    /* ==========================================================================
+       §07 SCENARIOS & RESTORATION SIMULATOR
+       ========================================================================== */
+    const SCENARIO_PRESETS = {
+      bau: { area: 1000000, nrRatio: 20, cPrice: 500, tabId: 'sc-tab-bau', rowId: 'row-sc-bau' },
+      balanced: { area: 1000000, nrRatio: 50, cPrice: 500, tabId: 'sc-tab-balanced', rowId: 'row-sc-balanced' },
+      nature: { area: 500000, nrRatio: 85, cPrice: 500, tabId: 'sc-tab-nature', rowId: 'row-sc-nature' },
+      custom: { area: 500000, nrRatio: 80, cPrice: 500, tabId: 'sc-tab-custom', rowId: 'row-sc-custom' }
+    };
+
+    function selectScenario(key) {
+      state.scenario = key;
+      document.querySelectorAll('.scenario-tab-btn').forEach(b => b.classList.remove('active'));
+      const activeTab = document.getElementById(SCENARIO_PRESETS[key].tabId);
+      if (activeTab) activeTab.classList.add('active');
+
+      document.querySelectorAll('.sc-table tr').forEach(r => r.classList.remove('active-sc-row'));
+      const activeRow = document.getElementById(SCENARIO_PRESETS[key].rowId);
+      if (activeRow) activeRow.classList.add('active-sc-row');
+
+      if (key !== 'custom') {
+        const p = SCENARIO_PRESETS[key];
+        document.getElementById('input-sim-area').value = p.area;
+        document.getElementById('input-sim-nr-ratio').value = p.nrRatio;
+        document.getElementById('input-sim-c-price').value = p.cPrice;
+        updateSimulatorOutputs();
+      }
+    }
+
+    function onSimulatorInputChanged() {
+      selectScenario('custom');
+      updateSimulatorOutputs();
+    }
+
+    function updateSimulatorOutputs() {
+      const areaRai = parseFloat(document.getElementById('input-sim-area').value);
+      const nrRatio = parseFloat(document.getElementById('input-sim-nr-ratio').value) / 100;
+      const cPriceTHB = parseFloat(document.getElementById('input-sim-c-price').value);
+
+      // Area label with unit reactivity
+      const areaMha = areaRai / 6250000;
+      document.getElementById('label-sim-area').innerText = `${(areaRai / 1000000).toFixed(2)} ล้านไร่ (${formatArea(areaMha, 2)})`;
+      document.getElementById('label-sim-nr-ratio').innerText = `${Math.round(nrRatio * 100)}% ฟื้นเอง (${Math.round((1 - nrRatio) * 100)}% ปลูกเสริม)`;
+      document.getElementById('label-sim-c-price').innerText = `${cPriceTHB} บาท / t CO₂e`;
+
+      // 1 hectare = 6.25 rai
+      const areaHa = areaRai / 6.25;
+      
+      // Tropical mean carbon accumulation ~108.8 Mg C/ha over 30 years (Williams et al.)
+      // 1 Mg C = 3.667 Mg CO2e
+      const totalCTons = areaHa * 108.8;
+      const totalCO2eTons = totalCTons * 3.667;
+      const totalCO2eMillionTons = totalCO2eTons / 1000000;
+      const totalCMillionTons = totalCTons / 1000000;
+      const carbonValMillionTHB = (totalCO2eTons * cPriceTHB) / 1000000;
+
+      // Budget economics:
+      // Active Planting standard govt rate ~40,000 THB/rai
+      // Natural Regeneration ~4,000 THB/rai
+      const costActiveFull = (areaRai * 40000) / 1000000; // Million THB
+      const costNaturalRegen = (areaRai * nrRatio * 4000) / 1000000;
+      const costEnrichmentPlanting = (areaRai * (1 - nrRatio) * 40000) / 1000000;
+      const costHybrid = costNaturalRegen + costEnrichmentPlanting;
+      const netSavings = costActiveFull - costHybrid;
+      const pctSaved = ((netSavings / costActiveFull) * 100).toFixed(1);
+
+      document.getElementById('calc-carbon-tco2').innerText = `${totalCO2eMillionTons.toFixed(1)} Mt`;
+      document.getElementById('calc-carbon-c').innerText = `~${totalCMillionTons.toFixed(1)} Mt C`;
+      document.getElementById('calc-carbon-val').innerText = `${Math.round(carbonValMillionTHB).toLocaleString()} M฿`;
+      document.getElementById('calc-cost-active').innerText = `${Math.round(costActiveFull).toLocaleString()} M฿`;
+      document.getElementById('calc-cost-hybrid').innerText = `${Math.round(costHybrid).toLocaleString()} M฿`;
+      document.getElementById('calc-net-savings').innerText = `ประหยัด ${Math.round(netSavings).toLocaleString()} ล้านบาท (${pctSaved}%)`;
+
+      // Update custom scenario table row
+      const tNr = document.getElementById('table-custom-nr');
+      const tCost = document.getElementById('table-custom-cost');
+      const tSave = document.getElementById('table-custom-save');
+      if (tNr) tNr.innerText = `${Math.round(nrRatio * 100)}%`;
+      if (tCost) tCost.innerText = `${Math.round(costHybrid).toLocaleString()} ล้านบาท`;
+      if (tSave) tSave.innerText = `ประหยัด ${Math.round(netSavings).toLocaleString()} ล้านบาท (${pctSaved}%)`;
+    }
+
+    /* ==========================================================================
+       MAP LIGHTBOX WITH SMOOTH PAN & DRAG
+       ========================================================================== */
+    let currentZoom = 1;
+    let panX = 0;
+    let panY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    function openMapLightbox(src, title) {
+      const modal = document.getElementById('map-lightbox');
+      const img = document.getElementById('lightbox-img');
+      const titleEl = document.getElementById('lightbox-title');
+      if (modal && img) {
+        img.src = src;
+        if (titleEl) titleEl.innerText = title || "แผนที่ความละเอียดสูง (30-m Resolution)";
+        resetLightboxZoom();
+        modal.classList.add('active');
+      }
+    }
+
+    function closeMapLightbox() {
+      const modal = document.getElementById('map-lightbox');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function zoomLightbox(delta) {
+      const img = document.getElementById('lightbox-img');
+      if (img) {
+        currentZoom = Math.max(0.6, Math.min(4.0, currentZoom + delta));
+        applyTransform();
+      }
+    }
+
+    function resetLightboxZoom() {
+      currentZoom = 1;
+      panX = 0;
+      panY = 0;
+      applyTransform();
+    }
+
+    function applyTransform() {
+      const img = document.getElementById('lightbox-img');
+      if (img) {
+        img.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      }
+    }
+
+    // Pan & Drag implementation for Lightbox
+    const wrapper = document.getElementById('lightbox-img-wrapper');
+    if (wrapper) {
+      wrapper.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        applyTransform();
+      });
+
+      window.addEventListener('mouseup', () => { isDragging = false; });
+
+      // Touch pan support
+      wrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          startX = e.touches[0].clientX - panX;
+          startY = e.touches[0].clientY - panY;
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        panX = e.touches[0].clientX - startX;
+        panY = e.touches[0].clientY - startY;
+        applyTransform();
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => { isDragging = false; });
+    }
+
+    /* ==========================================================================
+       PRESENTATION SLIDES MODE (8 COMPREHENSIVE SLIDES)
+       ========================================================================== */
+    const SLIDES_CONTENT = [
+      {
+        title: "1. บริบทและที่มาของงานวิจัยระดับโลก",
+        kicker: "WILLIAMS ET AL. 2024 · NATURE",
+        body: `
+          <p style="font-size:18px; line-height:1.7; margin-bottom:20px;">
+            งานวิจัยตีพิมพ์ใน <strong>Nature (2024)</strong> โดย Williams และคณะ ได้เผยแพร่ชุดข้อมูลแผนที่ความละเอียด 30 เมตร ชี้ว่าพื้นที่ป่าเขตร้อนทั่วโลกมีศักยภาพ <strong>ฟื้นตัวได้เองตามธรรมชาติสูงถึง 215 ล้านเฮกตาร์</strong> และสามารถกักเก็บคาร์บอนได้ถึง <strong>23.4 Gt C ในระยะเวลา 30 ปี</strong>
+          </p>
+          <div style="background:var(--bg-card-alt); padding:20px; border-radius:8px; border-left:4px solid var(--terracotta);">
+            <strong>สาระสำคัญต่อประเทศไทย:</strong> ประเทศไทยอยู่ในเขตชีวภูมิศาสตร์ <em>Indomalayan tropics</em> ซึ่งมีศักยภาพสูงเป็นอันดับสองของโลก (90 Mha) ข้อมูลนี้ตอบโจทย์ยุทธศาสตร์ชาติในการฟื้นฟูป่าแบบคุ้มค่าต้นทุนสูงสุด
+          </div>
+        `
+      },
+      {
+        title: "2. การเปรียบเทียบ: ปล่อยฟื้นเอง vs ปลูกป่าด้วยมือ",
+        kicker: "CORE THESIS & COST-BENEFIT",
+        body: `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div style="background:rgba(61,104,73,0.1); padding:20px; border-radius:8px;">
+              <h4 style="color:var(--forest); margin-bottom:10px;">✓ ฟื้นฟูตามธรรมชาติ (Natural Regen)</h4>
+              <ul style="font-size:15px; line-height:1.8; padding-left:18px;">
+                <li>ต้นทุนต่ำมาก: ~4,000 บาท/ไร่ (เน้นป้องกันไฟ)</li>
+                <li>ความหลากหลายทางชีวภาพสูงตามธรรมชาติ</li>
+                <li>ระบบรากทนทานต่อสภาพอากาศแปรปรวน</li>
+                <li>ไม่มีปัญหาการปลูกไม้ผิดชนิด (Species Mismatch)</li>
+              </ul>
+            </div>
+            <div style="background:rgba(184,100,59,0.1); padding:20px; border-radius:8px;">
+              <h4 style="color:var(--rust); margin-bottom:10px;">✕ ปลูกป่าด้วยมือ (Active Planting)</h4>
+              <ul style="font-size:15px; line-height:1.8; padding-left:18px;">
+                <li>ต้นทุนสูงมาก: 35,000 – 60,000+ บาท/ไร่</li>
+                <li>ชนิดไม้น้อยชนิด มักเป็นเชิงเดี่ยว</li>
+                <li>ต้องการการดูแลต่อเนื่อง 3–5 ปี</li>
+                <li>อัตราการตายสูงหากขาดการรดน้ำหรือดูแล</li>
+              </ul>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "3. ผลวิเคราะห์ข้อมูล Raster ของประเทศไทย",
+        kicker: "02_THAILAND_PNV_FINAL.TIF RESULTS",
+        body: `
+          <p style="font-size:17px; line-height:1.7; margin-bottom:16px;">
+            ผลการวิเคราะห์ข้อมูลความละเอียด 30 เมตรที่ครอบคลุมประเทศไทย (44.76 Mha):
+          </p>
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:20px;">
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px; text-align:center;">
+              <div style="color:var(--terracotta); font-size:24px; font-weight:700;">3.94 Mha</div>
+              <div style="font-size:13px; font-weight:600;">ศักยภาพสูง (66–100)</div>
+              <div style="font-size:11.5px; color:var(--ink-muted);">8.8% ของประเทศ · ภาคใต้และแนวป่าตะวันตก</div>
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px; text-align:center;">
+              <div style="color:var(--forest); font-size:24px; font-weight:700;">21.54 Mha</div>
+              <div style="font-size:13px; font-weight:600;">ศักยภาพปานกลาง (33–66)</div>
+              <div style="font-size:11.5px; color:var(--ink-muted);">48.1% ของประเทศ · เหมาะกับเทคนิค ANR</div>
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px; text-align:center;">
+              <div style="color:var(--rust); font-size:24px; font-weight:700;">19.29 Mha</div>
+              <div style="font-size:13px; font-weight:600;">ศักยภาพต่ำ (0–33)</div>
+              <div style="font-size:11.5px; color:var(--ink-muted);">43.1% ของประเทศ · ที่ราบลุ่มและเกษตรหนาแน่น</div>
+            </div>
+          </div>
+          <p style="font-size:14.5px; color:var(--ink-secondary);">
+            <strong>คะแนนเฉลี่ยระดับชาติ:</strong> 37 / 100 (มัธยฐาน 42) · ประมาณการศักยภาพกักเก็บคาร์บอน 30 ปีอยู่ที่ <strong>~4,870 ล้านตันคาร์บอน (~17.8 Gt CO₂e)</strong>
+          </p>
+        `
+      },
+      {
+        title: "4. ชนิดป่าและศักยภาพจำแนกประเภท (Forest Types)",
+        kicker: "ECOLOGICAL ZONING & TRAITS",
+        body: `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14px; line-height:1.65;">
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--forest);">ป่าดิบชื้น (PNV 82) & ป่าชายเลน (PNV 76):</strong><br />
+              ศักยภาพสูงสุด เมล็ดพันธุ์ในดินสมบูรณ์ กักเก็บ Blue Carbon มหาศาล — ใช้นโยบาย Passive 90%
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--terracotta);">ป่าดิบแล้ง (PNV 68) & ป่าดิบเขา (PNV 64):</strong><br />
+              ผืนป่าเขาใหญ่และดอยอินทนนท์ — ต้องการเทคนิค ANR ตัดสางวัชพืชและแนวกันไฟเปียก
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--forest-deep);">ป่าเบญจพรรณ (PNV 52):</strong><br />
+              ผืนป่าตะวันตก ไม้มีค่าสูง (สัก, ประดู่) — ฟื้นตัวจากการแตกหน่อตอเดิม (Coppicing)
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--rust);">ป่าเต็งรัง (PNV 38):</strong><br />
+              ที่ราบสูงอีสาน ดินลูกรังขาดน้ำ — จำเป็นต้องปรับปรุงหน้าดินและปลูกไม้ทนแล้งเสริม
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "5. ตัวแปรทำนาย 8 ชนิดในแบบจำลอง Machine Learning",
+        kicker: "RANDOM FOREST PREDICTORS",
+        body: `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14.5px; line-height:1.6;">
+            <div>
+              <p><strong>🚜 Cropland density:</strong> ตัวยับยั้งการฟื้นตัวที่แรงที่สุด (− ลบสูง)</p>
+              <p><strong>🏙️ Distance to urban:</strong> ห่างไกลเมือง การรบกวนน้อย (+ บวก)</p>
+              <p><strong>⛰️ Slope (DEM):</strong> ภูเขาสูงชัน มักถูกทิ้งร้างให้ฟื้นตัว (+ บวก)</p>
+              <p><strong>☀️ NPP (MODIS):</strong> ผลผลิตชีวมวลสูง พืชโตไว (+ บวก)</p>
+            </div>
+            <div>
+              <p><strong>🪨 Soil properties:</strong> ธาตุอาหารและความลึกดิน (± บริบทเฉพาะ)</p>
+              <p><strong>🌿 Biome:</strong> เขตชีวนิเวศกำหนดศักยภาพตามสภาพอากาศ</p>
+              <p><strong>🛡️ Protected neighbours:</strong> ติดป่าอนุรักษ์ มีฝนเมล็ดพันธุ์ (+ บวกสูง)</p>
+              <p><strong>🗺️ Land cover (ESA CCI):</strong> ประวัติการใช้ประโยชน์ที่ดิน</p>
+            </div>
+          </div>
+          <div style="margin-top:20px; font-size:13px; background:var(--bg-card-alt); padding:12px; border-radius:6px;">
+            <strong>ความถูกต้องของแบบจำลอง:</strong> 87.9% บนชุดข้อมูลอิสระ 4.87 ล้านจุด (แต่ในภูมิภาค SEA ต้องตรวจทานร่วมกับข้อมูลภาคสนามเสมอ)
+          </div>
+        `
+      },
+      {
+        title: "6. เปรียบเทียบ 4 สถานการณ์เชิงนโยบาย (Scenario Matrix)",
+        kicker: "POLICY SCENARIO MATRIX",
+        body: `
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; text-align:center;">
+            <div style="background:rgba(239,68,68,0.1); padding:16px; border-radius:8px;">
+              <h4 style="color:var(--rust); margin-bottom:6px;">1. แบบเดิม (BAU)</h4>
+              <p style="font-size:12px;">ปลูก 80% / ฟื้นเอง 20%</p>
+              <div style="font-size:18px; font-weight:700; color:var(--rust); margin-top:8px;">32,800 M฿</div>
+              <small style="color:var(--ink-muted);">ต้นทุนสูง เสี่ยงล้มเหลว</small>
+            </div>
+            <div style="background:rgba(234,179,8,0.12); padding:16px; border-radius:8px;">
+              <h4 style="color:#a16207; margin-bottom:6px;">2. สมดุล NDC</h4>
+              <p style="font-size:12px;">ปลูก 50% / ฟื้นเอง 50%</p>
+              <div style="font-size:18px; font-weight:700; color:#a16207; margin-top:8px;">22,000 M฿</div>
+              <small style="color:#15803d;">ประหยัด 18,000 M฿ (45%)</small>
+            </div>
+            <div style="background:rgba(34,197,94,0.15); padding:16px; border-radius:8px;">
+              <h4 style="color:#15803d; margin-bottom:6px;">3. ธรรมชาติเข้มข้น ⭐</h4>
+              <p style="font-size:12px;">ปลูก 15% / ฟื้นเอง 85%</p>
+              <div style="font-size:18px; font-weight:700; color:#15803d; margin-top:8px;">9,400 M฿</div>
+              <small style="color:#15803d; font-weight:700;">ประหยัด 30,600 M฿ (76.5%)</small>
+            </div>
+          </div>
+          <div style="margin-top:16px; font-size:13.5px; line-height:1.6; color:var(--ink-secondary);">
+            *การเลือกยุทธศาสตร์ Nature-Led ช่วยประหยัดงบประมาณแผ่นดินได้ถึง 76.5% โดยได้ผลลัพธ์การกักเก็บคาร์บอนเท่าเดิม และได้ความหลากหลายทางชีวภาพของไม้ท้องถิ่นแท้จริง
+          </div>
+        `
+      },
+      {
+        title: "7. การคำนวณงบประมาณและคาร์บอนเครดิต",
+        kicker: "RESTORATION SIMULATOR & ECONOMIC IMPACT",
+        body: `
+          <p style="font-size:17px; line-height:1.7; margin-bottom:18px;">
+            จากการจำลองโครงการฟื้นฟูป่า <strong>500,000 ไร่</strong> ในประเทศไทย โดยผสมผสานฟื้นฟูธรรมชาติ 85% และปลูกเสริม 15%:
+          </p>
+          <div style="background:rgba(34,197,94,0.12); padding:20px; border-radius:8px; margin-bottom:16px;">
+            <div style="font-size:22px; font-weight:700; color:#15803d; margin-bottom:6px;">
+              ประหยัดงบประมาณแผ่นดินได้กว่า 15,300 ล้านบาท
+            </div>
+            <div style="font-size:14px; color:#166534;">
+              (ต้นทุนลดลงจาก 20,000 ล้านบาท เหลือเพียง 4,700 ล้านบาท โดยกักเก็บคาร์บอนได้ถึง 31.9 ล้านตัน CO₂e คิดเป็นมูลค่ากว่า 15,900 ล้านบาท)
+            </div>
+          </div>
+          <p style="font-size:14px; color:var(--ink-secondary);">
+            งบประมาณที่ประหยัดได้สามารถนำไปเปลี่ยนเป็น <strong>กองทุนจ้างงานสีเขียว (Green Jobs)</strong> ให้แก่ราษฎรในชุมชนรอบป่าอนุรักษ์ในการลาดตระเวนและทำแนวกันไฟ
+          </p>
+        `
+      },
+      {
+        title: "8. ข้อเสนอแนะเชิงนโยบายสำหรับกระทรวงทรัพยากรธรรมชาติฯ",
+        kicker: "STRATEGIC RECOMMENDATIONS FOR THAILAND",
+        body: `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; font-size:14px; line-height:1.65;">
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--forest);">1. จัดลำดับแปลงฟื้นฟูคุ้มทุน</strong><br />
+              จัดสรรงบประมาณปี 2570 ของกรมป่าไม้และกรมอุทยานฯ ให้ตรงกับแปลงที่มีคะแนน PNV สูง เพื่อลดต้นทุนเพาะกล้าไม้
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--terracotta);">2. รายงานเป้าหมาย NDC & Article 6</strong><br />
+              ใช้เป็นข้อมูลฐานในการเจรจา Carbon Credit ระหว่างประเทศตามกรอบความตกลงปารีส
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--moss);">3. ออกแบบแนวเชื่อมต่อผืนป่า (30×30)</strong><br />
+              เชื่อมกลุ่มป่าตะวันตกและดงพญาเย็น-เขาใหญ่ ผ่านพื้นที่ PNV สูง เพื่อคืนถิ่นอาศัยของช้างและเสือโคร่ง
+            </div>
+            <div style="background:var(--bg-card-alt); padding:16px; border-radius:8px;">
+              <strong style="color:var(--gold);">4. บูรณาการในรายงาน EIA & SEA</strong><br />
+              สผ. กำหนดเป็นเกณฑ์ประเมินการสูญเสียทุนทางนิเวศในโครงการพัฒนาโครงสร้างพื้นฐาน
+            </div>
+          </div>
+          <div style="margin-top:22px; text-align:center; font-size:13px; color:var(--ink-muted);">
+            นำเสนอโดย: นายอภินันต์ เนียมสุทธิ (011233) · ตำแหน่งนักวิชาการสิ่งแวดล้อม
+          </div>
+        `
+      }
+    ];
+
+    function openPresentation() {
+      const modal = document.getElementById('pres-modal');
+      if (modal) {
+        modal.classList.add('active');
+        state.currentSlide = 0;
+        renderSlide();
+      }
+    }
+
+    function closePresentation() {
+      const modal = document.getElementById('pres-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function renderSlide() {
+      const card = document.getElementById('pres-slide-card');
+      const numEl = document.getElementById('pres-slide-num');
+      const s = SLIDES_CONTENT[state.currentSlide];
+      if (card && s) {
+        card.innerHTML = `
+          <div style="font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--terracotta); margin-bottom:8px;">${s.kicker}</div>
+          <h2 style="font-family:'Trirong', serif; font-size:32px; font-weight:600; color:var(--forest-deepest); margin-bottom:24px; line-height:1.2;">${s.title}</h2>
+          <div>${s.body}</div>
+        `;
+      }
+      if (numEl) {
+        numEl.innerText = `สไลด์ ${state.currentSlide + 1} / ${SLIDES_CONTENT.length}`;
+      }
+    }
+
+    function nextSlide() {
+      if (state.currentSlide < SLIDES_CONTENT.length - 1) {
+        state.currentSlide++;
+        renderSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (state.currentSlide > 0) {
+        state.currentSlide--;
+        renderSlide();
+      }
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      const lb = document.getElementById('map-lightbox');
+      if (lb && lb.classList.contains('active')) {
+        if (e.key === 'Escape') { closeMapLightbox(); return; }
+        if (e.key === '+' || e.key === '=') zoomLightbox(0.3);
+        if (e.key === '-' || e.key === '_') zoomLightbox(-0.3);
+        if (e.key === '0') resetLightboxZoom();
+      }
+
+      const modal = document.getElementById('pres-modal');
+      if (modal && modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+        else if (e.key === 'ArrowLeft') prevSlide();
+        else if (e.key === 'Escape') closePresentation();
+      }
+
+      const fm = document.getElementById('forest-modal');
+      if (fm && fm.classList.contains('active') && e.key === 'Escape') {
+        closeForestModal();
+      }
+    });
+
+    /* ==========================================================================
+       DYNAMIC QR CODE ENGINE & CHROME LAUNCHER
+       ========================================================================== */
+    function toggleQrCustomizer() {
+      const box = document.getElementById('qr-customizer-box');
+      if (box) {
+        box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+      }
+    }
+
+    function updateIndexQR() {
+      const input = document.getElementById('qr-url-input');
+      if (!input) return;
+      const url = input.value.trim() || 'https://aphinanniam.github.io/pnv-thailand/';
+      
+      const targetLink = document.getElementById('qr-target-link');
+      const chromeBtn = document.getElementById('qr-chrome-btn');
+      if (targetLink) targetLink.href = url;
+      if (chromeBtn) chromeBtn.href = url;
+      
+      const container = document.getElementById('dynamic-qr-canvas');
+      if (!container) return;
+      if (typeof QRCode !== 'undefined') {
+        container.innerHTML = '';
+        new QRCode(container, {
+          text: url,
+          width: 130,
+          height: 130,
+          colorDark: '#0a1f16',
+          colorLight: '#fdfaf2',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    }
+
+    function openQrInChrome() {
+      const input = document.getElementById('qr-url-input');
+      const url = (input && input.value.trim()) ? input.value.trim() : 'https://aphinanniam.github.io/pnv-thailand/';
+      window.open(url, '_blank', 'noopener');
+    }
+
+    /* ==========================================================================
+       INITIALIZATION
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSimulatorOutputs();
+      updatePredictorSim();
+    });
+  </script>
+</body>
+</html>
